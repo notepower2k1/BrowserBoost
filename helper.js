@@ -31,6 +31,20 @@ export async function deletelocalStorage(key) {
     return chrome.storage.local.remove(key);
 }
 
-export async function saveSettings(data) {
-    return chrome.storage.local.set({ ['setting']: data });
+export async function saveSettings(newData) {
+    return new Promise((resolve) => {
+        chrome.storage.local.get(['setting'], (result) => {
+            const current = result.setting || {};
+            const updated = { ...current, ...newData }; // merge
+            chrome.storage.local.set({ setting: updated }, () => resolve(updated));
+        });
+    });
+}
+
+export async function loadSettings() {
+    return new Promise((resolve) => {
+        chrome.storage.local.get(['setting'], (result) => {
+            resolve(result.setting || {});
+        });
+    });
 }

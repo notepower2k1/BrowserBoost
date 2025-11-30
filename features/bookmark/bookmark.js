@@ -1,4 +1,4 @@
-import { getLocalStorage, setLocalStorage, saveSettings, debounce } from "../../helper.js";
+import { getLocalStorage, setLocalStorage, saveSettings, debounce, loadSettings } from "../../helper.js";
 
 // =====================
 // DATA & LOCAL STORAGE
@@ -842,7 +842,8 @@ document.querySelector("#bookmark-container #toolbar #book-mark-current-web").on
 }
 
 export async function initBookmark() {
-    const setting = await getLocalStorage('setting');
+    const setting = await loadSettings('setting');
+
     if (setting) {
         viewMode = setting.bookMarkViewMode || "grid";
     }

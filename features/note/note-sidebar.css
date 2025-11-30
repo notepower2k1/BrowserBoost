@@ -1,0 +1,163 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+body.dark-mode {
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+}
+
+body.dark-mode #note-body {
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+}
+
+body.dark-mode #note-toolbar button,
+body.dark-mode #note-footer button,
+body.dark-mode #search-replace input,
+body.dark-mode #search-replace button {
+    background-color: #3a3a3a;
+    color: #f0f0f0;
+}
+
+
+#note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 8px;
+    border-bottom: 1px solid #ccc;
+    background: #f0f0f0;
+}
+
+.header-left button,
+.header-left select,
+.header-right button {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+#note-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px 8px;
+    border-bottom: 1px solid #ccc;
+    background: #fafafa;
+}
+
+#note-toolbar button, #note-toolbar select, #note-header button {
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    padding: 4px 6px;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    margin-right: 4px;
+    margin-bottom: 5px;
+    padding: 2px 6px;
+}
+
+#note-toolbar i, #note-toolbar i, #note-header i {
+    font-size: 16px;
+}
+
+#note-toolbar button:hover {
+    background: #f1f3f6;
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+#note-body {
+    flex: 1;
+    padding: 8px;
+    overflow-y: auto;
+    outline: none;
+    background: #fff;
+}
+
+#note-footer {
+    border-top: 1px solid #ccc;
+    padding: 5px 8px;
+    text-align: right;
+    background: #f0f0f0;
+    flex-shrink: 0; /* luôn ở dưới */
+}
+
+#note-footer button {
+    cursor: pointer;
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #fff;
+}
+
+.search-highlight {
+    background-color: yellow;
+}
+
+/* Container */
+#search-replace {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    border-top: 1px solid #ccc;
+    background-color: #f5f5f5;
+}
+
+/* Input text */
+#search-replace input[type="text"] {
+    flex: 1;               /* chiếm toàn bộ chiều ngang còn lại */
+    padding: 4px 6px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+/* Buttons */
+#search-replace button {
+    background-color: #e0e0e0;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+#search-replace button:hover {
+    background-color: #d0d0d0;
+}
+
+/* Icon spacing */
+#search-replace button i {
+    pointer-events: none;
+}
+
+/* Dark mode */
+body.dark-mode #search-replace {
+    background-color: #2b2b2b;
+    border-top: 1px solid #444;
+}
+
+body.dark-mode #search-replace input[type="text"] {
+    background-color: #3a3a3a;
+    color: #f0f0f0;
+    border: 1px solid #555;
+}
+
+body.dark-mode #search-replace button {
+    background-color: #3a3a3a;
+    color: #f0f0f0;
+}
+
+body.dark-mode #search-replace button:hover {
+    background-color: #4a4a4a;
+}

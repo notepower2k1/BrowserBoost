@@ -1,0 +1,156 @@
+(function () {
+    const KEY = 'stickyNotes';
+    let notes = [];
+
+    // Lấy note từ chrome.storage
+    function loadNotes(callback) {
+        chrome.storage.local.get([KEY], (res) => {
+            notes = res[KEY] || [];
+            if (callback) callback(notes);
+        });
+    }
+
+    // Lưu note vào storage
+    function saveNotes() {
+        chrome.storage.local.set({ [KEY]: notes });
+    }
+
+    // Tạo note element
+    function createNoteElement(note) {
+        if (document.querySelector(`.sticky-note[data-id="${note.id}"]`)) return;
+
+        const el = document.createElement('div');
+        el.className = 'sticky-note';
+        el.dataset.id = note.id;
+        el.style.left = (note.x || 100) + 'px';
+        el.style.top = (note.y || 100) + 'px';
+        el.style.width = (note.width || 320) + 'px';
+        el.style.height = (note.height || 240) + 'px';
+
+        el.innerHTML = `
+            <div class="sticky-note-header">
+                <button class="add-btn">＋</button>
+                <button class="delete-btn">×</button>
+            </div>
+            <div class="sticky-note-body" contenteditable="true">${note.content || ''}</div>
+        `;
+
+        document.body.appendChild(el);
+
+        const body = el.querySelector('.sticky-note-body');
+
+        // Save content on blur
+        body.addEventListener('blur', () => {
+            const i = notes.findIndex(n => n.id === note.id);
+            if (i !== -1) {
+                notes[i].content = body.innerText;
+                saveNotes();
+            }
+        });
+
+        // Add note button
+        el.querySelector('.add-btn').addEventListener('click', () => {
+            const newNote = {
+                id: Date.now(),
+                content: '',
+                x: el.offsetLeft + 20,
+                y: el.offsetTop + 20,
+                width: 160,
+                height: 120
+            };
+            notes.push(newNote);
+            saveNotes();
+            createNoteElement(newNote);
+        });
+
+        // Delete note button
+        el.querySelector('.delete-btn').addEventListener('click', () => {
+            notes = notes.filter(n => n.id !== note.id);
+            saveNotes();
+            el.remove();
+        });
+
+        // Drag
+        enableDrag(el, note.id);
+
+        // Resize Observer để theo dõi người dùng resize
+        const ro = new ResizeObserver(() => {
+            const i = notes.findIndex(n => n.id === note.id);
+            if (i !== -1) {
+                notes[i].width = el.offsetWidth;
+                notes[i].height = el.offsetHeight;
+                notes[i].x = el.offsetLeft;
+                notes[i].y = el.offsetTop;
+                saveNotes();
+            }
+        });
+        ro.observe(el);
+    }
+
+    function enableDrag(el, id) {
+        const header = el.querySelector('.sticky-note-header');
+        let startX = 0, startY = 0;
+        let dragging = false;
+
+        header.addEventListener('mousedown', (e) => {
+            dragging = true;
+            startX = e.clientX - el.offsetLeft;
+            startY = e.clientY - el.offsetTop;
+
+            function onMove(ev) {
+                el.style.left = (ev.clientX - startX) + 'px';
+                el.style.top = (ev.clientY - startY) + 'px';
+            }
+
+            function onUp() {
+                dragging = false;
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+                // Save position
+                const i = notes.findIndex(n => n.id === id);
+                if (i !== -1) {
+                    notes[i].x = el.offsetLeft;
+                    notes[i].y = el.offsetTop;
+                    saveNotes();
+                }
+            }
+
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        });
+    }
+
+    // Public API: gọi từ popup
+    window.createStickyNoteFromPopup = function (note) {
+        notes.push(note);
+        saveNotes();
+        createNoteElement(note);
+    };
+
+    // Listen to messages
+    chrome.runtime.onMessage.addListener((msg) => {
+        if (msg.action === "create-sticky-note") {
+            const note = {
+                id: Date.now(),
+                content: msg.content || '',
+                x: 100,
+                y: 100,
+                width: 320,
+                height: 240
+            };
+
+            notes.push(note);
+            saveNotes();
+            createNoteElement(note);
+        }
+    });
+
+    // Khởi tạo note
+    function initNotes() {
+        loadNotes((notes) => {
+            notes.forEach(createNoteElement);
+        });
+    }
+
+    initNotes();
+})();

@@ -1,14 +1,33 @@
 {
     "manifest_version": 3,
     "name": "Helper Browser Tool",
-    "version": "1.0",
-    "description": "Manage website groups quickly",
+    "version": "2.0",
+    "description": "Browser Helper Tool",
     "permissions": [
         "storage",
         "tabs",
         "activeTab",
-        "tabGroups"
+        "tabGroups",
+        "scripting",
+        "contextMenus",
+        "sidePanel"
     ],
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "features/sticky-note/sticky-note.js"
+            ],
+            "css": [
+                "features/sticky-note/sticky-note.css"
+            ]
+        }
+    ],
+    "side_panel": {
+        "default_path": "features/note/note-sidebar.html"
+    },
     "action": {
         "default_popup": "popup.html",
         "default_icon": {}

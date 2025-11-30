@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar Note</title>
+    <link rel="stylesheet" href="note-sidebar.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../assets/fontawesome/css/all.min.css">
+</head>
+
+<body>
+    <!-- Note Header -->
+    <div id="note-header">
+        <div class="header-left">
+            <button id="add-note" title="Add new note"><i class="fa-solid fa-plus"></i></button>
+            <button id="sticky-note" title="Sticky note to current website"><i class="fa-solid fa-note-sticky"></i></button>
+            <select id="note-selector" title="Select note"></select>
+        </div>
+        <div class="header-right">
+            <button id="toggle-dark" title="Toggle Dark Mode"><i class="fa-solid fa-moon"></i></button>
+            <button id="delete-note" title="Delete current note"><i class="fa-solid fa-trash"></i></button>
+        </div>
+    </div>
+
+    <!-- Note Toolbar -->
+    <div id="note-toolbar">
+        <!-- Font style -->
+        <button data-cmd="bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
+        <button data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
+        <button data-cmd="underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
+        <button data-cmd="strikeThrough" title="Strike"><i class="fa-solid fa-strikethrough"></i></button>
+
+        <!-- Font size -->
+        <select id="font-size" title="Font size">
+            <option value="12px">12</option>
+            <option value="14px" selected>14</option>
+            <option value="16px">16</option>
+            <option value="18px">18</option>
+            <option value="20px">20</option>
+        </select>
+
+        <!-- Text color -->
+        <button id="foreColor" title="Text color"><i class="fa-solid fa-palette"></i></button>
+
+        <!-- Alignment -->
+        <button data-cmd="justifyLeft" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+        <button data-cmd="justifyCenter" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+        <button data-cmd="justifyRight" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+        <button data-cmd="justifyFull" title="Justify"><i class="fa-solid fa-align-justify"></i></button>
+
+        <!-- Lists -->
+        <button data-cmd="insertUnorderedList" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+        <button data-cmd="insertOrderedList" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+
+        <!-- Indent -->
+        <button data-cmd="indent" title="Indent"><i class="fa-solid fa-indent"></i></button>
+        <button data-cmd="outdent" title="Outdent"><i class="fa-solid fa-outdent"></i></button>
+
+        <!-- Links & Media -->
+        <button data-cmd="createLink" data-prompt="Enter URL:" title="Insert Link"><i
+                class="fa-solid fa-link"></i></button>
+        <button data-cmd="unlink" title="Remove Link"><i class="fa-solid fa-unlink"></i></button>
+        <button data-cmd="insertImage" data-prompt="Enter Image URL:" title="Insert Image"><i
+                class="fa-solid fa-image"></i></button>
+
+        <!-- Remove formatting -->
+        <button data-cmd="removeFormat" title="Remove Format"><i class="fa-solid fa-eraser"></i></button>
+
+        <!-- Undo/Redo -->
+        <button data-cmd="undo" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+        <button data-cmd="redo" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
+    </div>
+
+    <!-- Note Body -->
+    <div id="note-body" contenteditable="true" spellcheck="false"></div>
+
+    <!-- Note Footer -->
+    <div id="note-footer">
+        <button id="copy-note" title="Copy all notes"><i class="fa-solid fa-copy"></i> Copy All</button>
+        <div id="search-replace">
+            <input type="text" id="search-text" placeholder="Search...">
+            <button id="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+    </div>
+
+    <script type="module" src="note-sidebar.js"></script>
+</body>
+
+</html>

@@ -6,11 +6,18 @@
 1. **BookMark Custom**  
    - Cho phép lưu và sắp xếp bookmark theo ý muốn.  
    - Hỗ trợ tìm kiếm nhanh, thêm ghi chú và quản lý các trang web yêu thích.  
+   - Có hết tất cả các chức năng của bookmark.
 
 2. **Tab Group Manager**  
    - Quản lý các nhóm tab đang mở.  
    - Dễ dàng tạo, đổi tên, xóa hoặc di chuyển tab giữa các nhóm.  
    - Giúp duy trì không gian làm việc gọn gàng và khoa học.  
+
+3. **Sidebar Note**  
+   - Cho phép note thông tin ngay trên trình duyệt
+
+3. **Sticky Note**
+   - Cho phép dán note lên các trang web khác nhau (một vài trang bị hạn chế)
 
 ## Cài đặt
 1. Tải source code về máy.  

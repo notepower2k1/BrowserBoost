@@ -1,4 +1,4 @@
-import { getLocalStorage, setLocalStorage, saveSettings, debounce } from "../../helper.js";
+import { getLocalStorage, saveSettings, debounce, loadSettings } from "../../helper.js";
 
 let viewMode = "grid"; // hoặc "list"
 let deleteMode = {};
@@ -550,7 +550,7 @@ document.querySelector("#tabmanager-container #toolbar #toggle-view-mode").oncli
 };
 // Khởi tạo
 export async function initTabManager() {
-    const setting = await getLocalStorage('setting');
+    const setting = await loadSettings('setting');
     if (setting) {
         viewMode = setting.tabViewMode || "grid";
     }
