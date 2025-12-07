@@ -1,89 +1,133 @@
+// features/water-reminder/water-reminder.js
+import * as utils from './water-utils.js';
 
-import { getLocalStorage, setLocalStorage } from "../../helper.js";
+const CONTAINER_ID = "water-container";
 
+// exported to be called from popup.js lazy-loader
 export async function initWaterReminder() {
-    const container = document.getElementById("water-container");
+    const container = document.getElementById(CONTAINER_ID);
+    if (!container) return console.error("Missing container:", CONTAINER_ID);
 
-    // Load giao diện
-    const html = await fetch("./features/water-reminder/water-reminder.html").then(r => r.text());
+    // load html
+    const html = await fetch(chrome.runtime.getURL('features/water-reminder/water-reminder.html')).then(r => r.text());
     container.innerHTML = html;
 
-    // Load CSS
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "./features/water-reminder/water-reminder.css";
+    // load css
+    const cssHref = chrome.runtime.getURL('features/water-reminder/water-reminder.css');
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = cssHref;
     document.head.appendChild(link);
 
-    // Khởi tạo logic sau khi giao diện sẵn sàng
-    setupEvents();
+    // init logic
+    await refreshUI();
+    setupEventHandlers();
 }
 
-function setupEvents() {
-    const calcBtn = document.getElementById("calc-goal");
-    const startBtn = document.getElementById("start-reminder");
+async function refreshUI() {
+    const settings = await utils.getSettings();
+    const day = await utils.getDayData();
+    const goal = settings.goal || 2000;
+    const intake = day.intake || 0;
+    const percent = Math.min(100, Math.round(intake / goal * 100));
 
-    if (calcBtn) {
-        calcBtn.addEventListener("click", () => {
-            const weight = Number(document.getElementById("weight").value);
-            const goal = weight * 35; // ml
-            document.getElementById("custom-goal").value = goal;
-        });
+    // update cup
+    const waterRect = document.getElementById("waterRect");
+    const waterWave = document.getElementById("waterWave");
+    const cupPercentage = document.getElementById("cupPercentage");
+    const cupMlText = document.getElementById("cupMlText");
+    if (waterRect) {
+        const clipTop = 26;
+        const clipBottom = 236;
+        const clipHeight = clipBottom - clipTop; // = 210
+
+        const fillHeight = Math.round(clipHeight * (percent / 100));
+
+        // Khi 100% → y = clipTop
+        const y = clipTop + (clipHeight - fillHeight);
+
+        waterRect.setAttribute("x", 44);
+        waterRect.setAttribute("y", y);
+        waterRect.setAttribute("height", fillHeight);
+        waterRect.setAttribute("width", 112);
+    }
+    if (waterWave) {
+        const clipTop = 26;
+        const clipBottom = 236;
+        const clipHeight = clipBottom - clipTop;
+
+        const fillHeight = Math.round(clipHeight * (percent / 100));
+        const yBase = clipTop + (clipHeight - fillHeight) + 6;
+
+        const path = `
+        M44 ${yBase}
+        q 20 -6 40 0
+        q 20 6 40 0
+        q 20 -6 40 0
+        v 20 h -160 z
+    `;
+
+        waterWave.setAttribute("d", path);
     }
 
-    if (startBtn) {
-        startBtn.addEventListener("click", async () => {
-            const height = Number(document.getElementById("height").value);
-            const weight = Number(document.getElementById("weight").value);
-            const goal = Number(document.getElementById("custom-goal").value);
-            const interval = Number(document.getElementById("interval").value);
+    if (cupPercentage) cupPercentage.textContent = `${percent}%`;
+    if (cupMlText) cupMlText.textContent = `${intake} / ${goal} ml`;
 
-            await setLocalStorage('water_settings', { height, weight, goal, interval });
-
-            chrome.alarms.clear("water_reminder");
-            chrome.alarms.create("water_reminder", {
-                delayInMinutes: interval,
-                periodInMinutes: interval
-            });
-
-            alert("Đã bật nhắc nhở uống nước!");
-        });
+    // streak & status
+    const streakCountEl = document.getElementById("streakCount");
+    const todayStatusEl = document.getElementById("todayStatus");
+    const streak = await utils.computeStreak(goal);
+    if (streakCountEl) streakCountEl.textContent = `${streak} days`;
+    if (todayStatusEl) {
+        todayStatusEl.textContent = (intake >= goal) ? "Completed" : "In Progress";
+        todayStatusEl.className = (intake >= goal) ? "value completed" : "value in-progress";
     }
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
-    const s = await getLocalStorage('water_settings');
-
-    if (!s) return;
-
-    document.getElementById("height").value = s.height || "";
-    document.getElementById("weight").value = s.weight || "";
-    document.getElementById("custom-goal").value = s.goal || "";
-    document.getElementById("interval").value = s.interval || "60";
-    document.getElementById("start-reminder").addEventListener("click", async () => {
-        const height = Number(document.getElementById("height").value);
-        const weight = Number(document.getElementById("weight").value);
-        const customGoal = Number(document.getElementById("custom-goal").value);
-
-        const intervalSelect = document.getElementById("interval").value;
-        const interval = intervalSelect === "custom"
-            ? Number(document.getElementById("custom-interval").value)
-            : Number(intervalSelect);
-
-        const goal = customGoal || (weight * 35);
-
-        // Lưu setting
-        await setLocalStorage('water_settings', { height, weight, goal, interval });
-
-        // Clear alarm cũ
-        chrome.alarms.clear("water_reminder");
-
-        // Tạo alarm mới
-        chrome.alarms.create("water_reminder", {
-            delayInMinutes: interval,
-            periodInMinutes: interval
+function setupEventHandlers() {
+    // quick add
+    document.querySelectorAll('.quick-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const amount = Number(btn.dataset.amount || 0);
+            await utils.addIntake(amount);
+            await checkIfCompletedAndUpdateAlarms();
+            await refreshUI();
         });
-
-        alert("Đã bật nhắc nhở uống nước!");
     });
 
-});
+    // settings button
+    const settingsBtn = document.getElementById("openSettings");
+    if (settingsBtn) settingsBtn.addEventListener("click", async () => {
+        // lazy load settings module
+        const module = await import('./water-settings.js');
+        module.initWaterSettings();
+    });
+
+    // reset today's intake
+    const resetBtn = document.getElementById("resetToday");
+    if (resetBtn) resetBtn.addEventListener('click', async () => {
+        if (!confirm("Reset today's intake to 0?")) return;
+        await utils.resetToday();
+        await refreshUI();
+    });
+}
+
+// when day reaches goal, we mark day completed and optionally clear alarms
+async function checkIfCompletedAndUpdateAlarms() {
+    const settings = await utils.getSettings();
+    const day = await utils.getDayData();
+    const goal = settings.goal || 2000;
+    if (!day) return;
+    if (day.intake >= goal && !day.completed) {
+        // mark completed
+        const all = await utils.getAllData();
+        const key = utils.getTodayKey();
+        all[key].completed = true;
+        await utils.saveAllData(all);
+
+        // optional: if reminders should stop when completed, clear alarm
+        if (settings.reminderEnabled && settings.stopWhenComplete) {
+            chrome.alarms.clear("water_reminder");
+        }
+    }
+}

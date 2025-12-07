@@ -11,7 +11,8 @@
         "scripting",
         "contextMenus",
         "sidePanel",
-        "alarms"
+        "alarms",
+        "notifications"
     ],
     "content_scripts": [
         {
@@ -29,9 +30,19 @@
     "side_panel": {
         "default_path": "features/note/note-sidebar.html"
     },
+    "icons": {
+        "48": "icon-48x48.png",
+        "72": "icon-72x72.png",
+        "96": "icon-72x72.png",
+        "128": "icon-128x128.png"
+    },
     "action": {
         "default_popup": "popup.html",
-        "default_icon": {}
+        "default_icon": {
+            "48": "icon-48x48.png",
+            "72": "icon-72x72.png"
+        },
+        "default_title": "Browser Helper Tool"
     },
     "background": {
         "service_worker": "background.js"

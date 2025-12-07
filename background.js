@@ -46,18 +46,86 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
 });
 
-chrome.alarms.onAlarm.addListener(alarm => {
-    if (alarm.name === "water_reminder") {
-        chrome.notifications.create({
-            type: "basic",
-            iconUrl: "assets/media/chrome.png",
-            title: "Đến giờ uống nước 💧",
-            message: "Uống nước đi nào, tốt cho sức khoẻ!",
-            priority: 2
-        });
+chrome.runtime.onMessage.addListener((msg) => {
+    if (msg.action === "rebuild-water-reminder") {
+        setupWaterAlarms();
     }
 });
 
+chrome.alarms.onAlarm.addListener(async alarm => {
+    if (!alarm.name.startsWith("water_reminder")) return;
+
+    const settings = (await chrome.storage.local.get('water_settings_v1')).water_settings_v1 || {};
+
+    if (!settings.enabled) return; // <<--- thêm dòng này
+
+    chrome.notifications.create({
+        type: "basic",
+        iconUrl: "assets/media/chrome.png",
+        title: "Time to drink water 💧",
+        message: "Stay hydrated!",
+        priority: 2
+    });
+
+    if (settings.sound) {
+        try {
+            const ctx = new (self.AudioContext || self.webkitAudioContext)();
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = "sine";
+            o.frequency.value = 880;
+            g.gain.value = 0.02;
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.start();
+            setTimeout(() => { o.stop(); ctx.close(); }, 350);
+        } catch (e) { }
+    }
+});
+
+
+async function setupWaterAlarms() {
+    // Clear old alarms
+    const alarms = await chrome.alarms.getAll();
+    for (const a of alarms) {
+        if (a.name.startsWith("water_reminder")) {
+            chrome.alarms.clear(a.name);
+        }
+    }
+
+    // Load settings
+    const settings = (await chrome.storage.local.get("water_settings_v1")).water_settings_v1;
+    if (!settings) return;
+
+    // MODE 1: Interval
+    if (settings.mode === "interval") {
+        chrome.alarms.create("water_reminder", {
+            periodInMinutes: settings.intervalMinutes
+        });
+    }
+
+    // MODE 2: Fixed Times
+    if (settings.mode === "schedule") {
+        settings.scheduleTimes.forEach(time => {
+            const [h, m] = time.split(":").map(Number);
+            const now = new Date();
+
+            let target = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate(),
+                h, m, 0
+            ).getTime();
+
+            if (target <= Date.now()) target += 24 * 60 * 60 * 1000; // next day
+
+            chrome.alarms.create(`water_reminder_${time}`, {
+                when: target,
+                periodInMinutes: 24 * 60
+            });
+        });
+    }
+}
 async function handleAddBookmark(tab) {
     if (!tab || !tab.url) return;
 
