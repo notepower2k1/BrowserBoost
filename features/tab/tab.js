@@ -479,7 +479,28 @@ function handleSearchWebInput() {
 }
 
 
-window.addEventListener("DOMContentLoaded", async () => {
+// Khởi tạo
+export async function initTabManager() {
+    const container = document.getElementById("tabmanager-container");
+
+    // Load giao diện
+    const html = await fetch("./features/tab/tab.html").then(r => r.text());
+    container.innerHTML = html;
+
+    // Load CSS
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "./features/tab/tab.css";
+    document.head.appendChild(link);
+
+    const setting = await loadSettings('setting');
+    if (setting) {
+        viewMode = setting.tabViewMode || "grid";
+    }
+
+    await renderTabGroup();
+
+
     document.querySelectorAll(".color-list span").forEach(el => {
         el.addEventListener("click", () => {
             document.querySelectorAll(".color-list span").forEach(x => x.classList.remove("selected"));
@@ -549,25 +570,4 @@ window.addEventListener("DOMContentLoaded", async () => {
             'tabViewMode': viewMode
         });
     };
-});
-// Khởi tạo
-export async function initTabManager() {
-    const container = document.getElementById("tabmanager-container");
-
-    // Load giao diện
-    const html = await fetch("./features/tab/tab.html").then(r => r.text());
-    container.innerHTML = html;
-
-    // Load CSS
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "./features/tab/tab.css";
-    document.head.appendChild(link);
-
-    const setting = await loadSettings('setting');
-    if (setting) {
-        viewMode = setting.tabViewMode || "grid";
-    }
-
-    await renderTabGroup();
 }

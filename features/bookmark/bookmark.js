@@ -759,7 +759,30 @@ function handleSearchWebInput() {
     highlightWebsiteItems(filterText);
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
+
+export async function initBookmark() {
+    const container = document.getElementById("bookmark-container");
+
+    // Load giao diện
+    const html = await fetch("./features/bookmark/bookmark.html").then(r => r.text());
+    container.innerHTML = html;
+
+    // Load CSS
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "./features/bookmark/bookmark.css";
+    document.head.appendChild(link);
+
+    const setting = await loadSettings('setting');
+
+    if (setting) {
+        viewMode = setting.bookMarkViewMode || "grid";
+    }
+
+    await loadData();
+    await renderGroups();
+
+
 
     // Mở modal thêm group
     document.querySelector("#bookmark-container #open-add-group-modal").onclick = () => {
@@ -841,27 +864,4 @@ window.addEventListener("DOMContentLoaded", async () => {
             openAddModal('group-1', url, title);
         });
     }
-});
-
-export async function initBookmark() {
-    const container = document.getElementById("bookmark-container");
-
-    // Load giao diện
-    const html = await fetch("./features/bookmark/bookmark.html").then(r => r.text());
-    container.innerHTML = html;
-
-    // Load CSS
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "./features/bookmark/bookmark.css";
-    document.head.appendChild(link);
-
-    const setting = await loadSettings('setting');
-
-    if (setting) {
-        viewMode = setting.bookMarkViewMode || "grid";
-    }
-
-    await loadData();
-    await renderGroups();
 }

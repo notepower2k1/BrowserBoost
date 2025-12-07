@@ -19,6 +19,10 @@
 3. **Sticky Note**
    - Cho phép dán note lên các trang web khác nhau (một vài trang bị hạn chế)
 
+3. **Water Remider**
+   - Nhắc nhở uống nước.
+   - Tracking lượng nước đã uống trong ngày.
+
 ## Cài đặt
 1. Tải source code về máy.  
 2. Mở Chrome → `chrome://extensions/` → Bật **Developer mode**.  
