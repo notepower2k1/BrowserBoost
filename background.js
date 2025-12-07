@@ -46,6 +46,18 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
 });
 
+chrome.alarms.onAlarm.addListener(alarm => {
+    if (alarm.name === "water_reminder") {
+        chrome.notifications.create({
+            type: "basic",
+            iconUrl: "assets/media/chrome.png",
+            title: "Đến giờ uống nước 💧",
+            message: "Uống nước đi nào, tốt cho sức khoẻ!",
+            priority: 2
+        });
+    }
+});
+
 async function handleAddBookmark(tab) {
     if (!tab || !tab.url) return;
 

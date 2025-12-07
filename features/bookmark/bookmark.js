@@ -753,95 +753,109 @@ function setupWebItemContextMenu() {
     });
 }
 
-// Mở modal thêm group
-document.querySelector("#bookmark-container #open-add-group-modal").onclick = () => {
-    const modal = document.querySelector("#bookmark-container #add-group-modal");
-    const input = document.querySelector("#bookmark-container #new-group-name");
-    modal.classList.remove("hidden");
-    input.value = "";
-    input.focus();
-};
-
-// Xác nhận thêm group
-document.querySelector("#bookmark-container #confirm-add-group").onclick = () => {
-    const input = document.querySelector("#bookmark-container #new-group-name");
-    const name = input.value.trim();
-    if (!name) return alert("Group name not empty!");
-
-    // Kiểm tra trùng tên
-    if (groups.some(g => g.name === name)) {
-        return alert("Group is existed!");
-    }
-
-    // Tạo group mới
-    const newGroup = {
-        id: "group-" + Date.now(), // id duy nhất
-        name: name,
-        pinned: false,
-        pinnedTime: null,
-        toggle: true,
-        websites: []
-    };
-
-    groups.push(newGroup);
-    saveData();
-    renderGroups();
-
-    // Ẩn modal
-    document.querySelector("#bookmark-container #add-group-modal").classList.add("hidden");
-};
-
-// Hủy thêm group
-document.querySelector("#bookmark-container #cancel-add-group").onclick = () => {
-    document.querySelector("#bookmark-container #add-group-modal").classList.add("hidden");
-};
-
-document.querySelector("#bookmark-container #delete-all-groups").onclick = () => {
-    // Confirm
-    if (!confirm("Delete all groups?")) return;
-
-    groups = [];
-    deletelocalStorage(keyLocal);
-    renderGroups();
-};
-
-
 function handleSearchWebInput() {
     const input = document.querySelector("#bookmark-container #toolbar #search-web");
     const filterText = input.value.trim();
     highlightWebsiteItems(filterText);
 }
 
-// Gắn sự kiện input
-document.querySelector("#bookmark-container #toolbar #search-web").addEventListener("input", debounce(handleSearchWebInput, 500));
+window.addEventListener("DOMContentLoaded", async () => {
 
-document.querySelector("#bookmark-container #toolbar #toggle-view-mode").onclick = async() => {
-    viewMode = viewMode === "grid" ? "list" : "grid";
-    renderGroups();
+    // Mở modal thêm group
+    document.querySelector("#bookmark-container #open-add-group-modal").onclick = () => {
+        const modal = document.querySelector("#bookmark-container #add-group-modal");
+        const input = document.querySelector("#bookmark-container #new-group-name");
+        modal.classList.remove("hidden");
+        input.value = "";
+        input.focus();
+    };
 
-    await new Promise(resolve => setTimeout(resolve, 120));
-    handleSearchWebInput();
-    saveSettings({
-        'bookMarkViewMode': viewMode
-    });
-};
+    // Xác nhận thêm group
+    document.querySelector("#bookmark-container #confirm-add-group").onclick = () => {
+        const input = document.querySelector("#bookmark-container #new-group-name");
+        const name = input.value.trim();
+        if (!name) return alert("Group name not empty!");
+
+        // Kiểm tra trùng tên
+        if (groups.some(g => g.name === name)) {
+            return alert("Group is existed!");
+        }
+
+        // Tạo group mới
+        const newGroup = {
+            id: "group-" + Date.now(), // id duy nhất
+            name: name,
+            pinned: false,
+            pinnedTime: null,
+            toggle: true,
+            websites: []
+        };
+
+        groups.push(newGroup);
+        saveData();
+        renderGroups();
+
+        // Ẩn modal
+        document.querySelector("#bookmark-container #add-group-modal").classList.add("hidden");
+    };
+
+    // Hủy thêm group
+    document.querySelector("#bookmark-container #cancel-add-group").onclick = () => {
+        document.querySelector("#bookmark-container #add-group-modal").classList.add("hidden");
+    };
+
+    document.querySelector("#bookmark-container #delete-all-groups").onclick = () => {
+        // Confirm
+        if (!confirm("Delete all groups?")) return;
+
+        groups = [];
+        deletelocalStorage(keyLocal);
+        renderGroups();
+    };
+
+    // Gắn sự kiện input
+    document.querySelector("#bookmark-container #toolbar #search-web").addEventListener("input", debounce(handleSearchWebInput, 500));
+
+    document.querySelector("#bookmark-container #toolbar #toggle-view-mode").onclick = async () => {
+        viewMode = viewMode === "grid" ? "list" : "grid";
+        renderGroups();
+
+        await new Promise(resolve => setTimeout(resolve, 120));
+        handleSearchWebInput();
+        saveSettings({
+            'bookMarkViewMode': viewMode
+        });
+    };
 
 
-document.querySelector("#bookmark-container #toolbar #book-mark-current-web").onclick = () => {
-    // chrome.tabs.query cần permissions ["tabs"]
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tab = tabs[0];
-        if (!tab) return;
+    document.querySelector("#bookmark-container #toolbar #book-mark-current-web").onclick = () => {
+        // chrome.tabs.query cần permissions ["tabs"]
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const tab = tabs[0];
+            if (!tab) return;
 
-        const url = tab.url || '';
-        const title = tab.title || '';
+            const url = tab.url || '';
+            const title = tab.title || '';
 
-        // Gọi hàm mở modal, điền giá trị URL + short name
-        openAddModal('group-1', url, title);
-    });
-}
+            // Gọi hàm mở modal, điền giá trị URL + short name
+            openAddModal('group-1', url, title);
+        });
+    }
+});
 
 export async function initBookmark() {
+    const container = document.getElementById("bookmark-container");
+
+    // Load giao diện
+    const html = await fetch("./features/bookmark/bookmark.html").then(r => r.text());
+    container.innerHTML = html;
+
+    // Load CSS
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "./features/bookmark/bookmark.css";
+    document.head.appendChild(link);
+
     const setting = await loadSettings('setting');
 
     if (setting) {

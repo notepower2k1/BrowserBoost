@@ -10,7 +10,8 @@
         "tabGroups",
         "scripting",
         "contextMenus",
-        "sidePanel"
+        "sidePanel",
+        "alarms"
     ],
     "content_scripts": [
         {

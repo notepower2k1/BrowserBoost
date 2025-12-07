@@ -1,0 +1,76 @@
+<div class="groups-container"></div>
+
+<!-- Modal add -->
+<div id="add-modal" class="modal hidden">
+    <div class="modal-box">
+        <select id="group-select"></select>
+        <input id="add-url-input" type="text" placeholder="Paste URL website..." />
+        <input id="short-name-input" type="text" placeholder="Short name website..." />
+        <div class="modal-buttons">
+            <button id="confirm-add" class="btn add">
+                <i class="fa-solid fa-add"></i>
+            </button>
+            <button id="cancel-add" class="btn delete">
+                <i class="fa-solid fa-x"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal add group -->
+<div id="add-group-modal" class="modal hidden">
+    <div class="modal-box">
+        <input id="new-group-name" type="text" placeholder="Group name..." />
+        <div class="modal-buttons">
+            <button id="confirm-add-group" class="btn add">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <button id="cancel-add-group" class="btn delete">
+                <i class="fa-solid fa-x"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="group-action-modal" class="modal hidden">
+    <div class="modal-box">
+        <div class="modal-buttons">
+            <button id="open-all-tabs" class="btn add">Open All</button>
+            <button id="open-all-new-window" class="btn add">Open All in new window</button>
+            <button id="open-incognito" class="btn add">Open All in incognito window</button>
+            <button id="close-modal" class="btn delete">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="website-action-modal" class="modal hidden">
+    <div class="modal-box">
+        <div class="modal-buttons">
+            <button id="open-tab" class="btn add">Open in new tab</button>
+            <button id="open-window" class="btn add">Open in new window</button>
+            <button id="open-incognito" class="btn add">Open in incognito window</button>
+            <button id="close-website-modal" class="btn delete">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="toolbar">
+    <div class="toolbar-search">
+        <input type="text" id="search-web" placeholder="Search website title..." />
+    </div>
+
+    <div class="toolbar-actions">
+        <button id="open-add-group-modal" class="btn toolbar-btn" tooltip="Add group">
+            <i class="fa-solid fa-folder-plus"></i>
+        </button>
+        <button id="toggle-view-mode" class="btn toolbar-btn" tooltip="Toggle view mode">
+            <i class="fa-solid fa-eye"></i>
+        </button>
+        <button id="delete-all-groups" class="btn toolbar-btn" tooltip="Delete all groups">
+            <i class="fa-solid fa-dumpster"></i>
+        </button>
+        <button id="book-mark-current-web" class="btn toolbar-btn" tooltip="Bookmark current website">
+            <i class="fa-solid fa-bookmark"></i>
+        </button>
+    </div>
+</div>

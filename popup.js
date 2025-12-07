@@ -42,6 +42,13 @@ tabs.forEach(tab => {
             module.initTabManager();
             window.tabManagerLoaded = true;
         }
+
+        // load module lazily
+        if (target === "water" && !window.waterLoaded) {
+            const module = await import('./features/water-reminder/water-reminder.js');
+            module.initWaterReminder();
+            window.waterLoaded = true;
+        }
     });
 });
 
@@ -55,12 +62,3 @@ document.querySelector('#openNoteBtn').addEventListener('click', async () => {
         window.close();
     }
 });
-
-// document.querySelector('#addNoteSticky').addEventListener('click', async () => {
-//     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-//         chrome.tabs.sendMessage(tabs[0].id, {
-//             action: "create-sticky-note",
-//             content: ''
-//         });
-//     });
-// });

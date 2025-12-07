@@ -457,7 +457,7 @@ function highlightTabItems(keyword) {
 
     items.forEach(item => {
         const title = item.dataset.title?.toLowerCase() || "";
-        
+
         if (!lower) {
             // reset highlight
             item.classList.remove("highlight");
@@ -472,84 +472,98 @@ function highlightTabItems(keyword) {
     });
 }
 
-document.querySelectorAll(".color-list span").forEach(el => {
-    el.addEventListener("click", () => {
-        document.querySelectorAll(".color-list span").forEach(x => x.classList.remove("selected"));
-        el.classList.add("selected");
-        currentSelectedColor = el.dataset.color;
-    });
-});
-
-
 function handleSearchWebInput() {
     const input = document.querySelector("#tabmanager-container #toolbar #search-web");
     const filterText = input.value.trim();
     highlightTabItems(filterText);
 }
 
-// Gắn sự kiện input
-document.querySelector("#tabmanager-container #toolbar #search-web").addEventListener("input", debounce(handleSearchWebInput, 500));
 
-// Khi click "Add group" → mở modal edit, nhưng để tạo group mới
-document.querySelector("#tabmanager-container #toolbar #open-add-group-modal").onclick = () => {
-    openEditGroupModal();
-};
-
-// Xử lý lưu modal edit group (dùng chung)
-document.querySelector("#tabmanager-container #edit-group-save").onclick = async () => {
-    const newName = document.querySelector("#tabmanager-container #edit-group-name").value.trim();
-
-    if (currentEditGroupId != null) {
-        // Edit group hiện có
-        await chrome.tabGroups.update(currentEditGroupId, {
-            title: newName || undefined,
-            color: currentSelectedColor || undefined
+window.addEventListener("DOMContentLoaded", async () => {
+    document.querySelectorAll(".color-list span").forEach(el => {
+        el.addEventListener("click", () => {
+            document.querySelectorAll(".color-list span").forEach(x => x.classList.remove("selected"));
+            el.classList.add("selected");
+            currentSelectedColor = el.dataset.color;
         });
-    } else {
-        // Tạo group mới: tạo 1 tab mới rỗng, sau đó group nó
-        const newTab = await chrome.tabs.create({ url: "chrome://newtab/", active: false });
-        const newGroup = await chrome.tabs.group({ tabIds: newTab.id });
-        await chrome.tabGroups.update(newGroup, {
-            title: newName || "Group",
-            color: currentSelectedColor || "grey"
-        });
-    }
-
-    document.querySelector("#tabmanager-container #edit-group-modal").classList.add("hidden");
-    renderTabGroup();
-};
-
-// Hủy modal
-document.querySelector("#tabmanager-container #edit-group-cancel").onclick = () => {
-    document.querySelector("#tabmanager-container #edit-group-modal").classList.add("hidden");
-};
-
-document.querySelector("#tabmanager-container #toolbar #delete-all-groups").onclick = async () => {
-    // Lấy tất cả tab đang có group
-    const tabs = await chrome.tabs.query({});
-    const groupedTabs = tabs.filter(t => t.groupId !== -1);
-
-    if (groupedTabs.length === 0) return;
-
-    // Ungroup tất cả tab
-    await chrome.tabs.ungroup(groupedTabs.map(t => t.id));
-
-    renderTabGroup();
-};
-
-document.querySelector("#tabmanager-container #toolbar #toggle-view-mode").onclick = async () => {
-    viewMode = viewMode === "grid" ? "list" : "grid";
-    renderTabGroup();
-
-    await new Promise(resolve => setTimeout(resolve, 120));
-    handleSearchWebInput();
-
-    saveSettings({
-        'tabViewMode': viewMode
     });
-};
+
+    // Gắn sự kiện input
+    document.querySelector("#tabmanager-container #toolbar #search-web").addEventListener("input", debounce(handleSearchWebInput, 500));
+
+    // Khi click "Add group" → mở modal edit, nhưng để tạo group mới
+    document.querySelector("#tabmanager-container #toolbar #open-add-group-modal").onclick = () => {
+        openEditGroupModal();
+    };
+
+    // Xử lý lưu modal edit group (dùng chung)
+    document.querySelector("#tabmanager-container #edit-group-save").onclick = async () => {
+        const newName = document.querySelector("#tabmanager-container #edit-group-name").value.trim();
+
+        if (currentEditGroupId != null) {
+            // Edit group hiện có
+            await chrome.tabGroups.update(currentEditGroupId, {
+                title: newName || undefined,
+                color: currentSelectedColor || undefined
+            });
+        } else {
+            // Tạo group mới: tạo 1 tab mới rỗng, sau đó group nó
+            const newTab = await chrome.tabs.create({ url: "chrome://newtab/", active: false });
+            const newGroup = await chrome.tabs.group({ tabIds: newTab.id });
+            await chrome.tabGroups.update(newGroup, {
+                title: newName || "Group",
+                color: currentSelectedColor || "grey"
+            });
+        }
+
+        document.querySelector("#tabmanager-container #edit-group-modal").classList.add("hidden");
+        renderTabGroup();
+    };
+
+    // Hủy modal
+    document.querySelector("#tabmanager-container #edit-group-cancel").onclick = () => {
+        document.querySelector("#tabmanager-container #edit-group-modal").classList.add("hidden");
+    };
+
+    document.querySelector("#tabmanager-container #toolbar #delete-all-groups").onclick = async () => {
+        // Lấy tất cả tab đang có group
+        const tabs = await chrome.tabs.query({});
+        const groupedTabs = tabs.filter(t => t.groupId !== -1);
+
+        if (groupedTabs.length === 0) return;
+
+        // Ungroup tất cả tab
+        await chrome.tabs.ungroup(groupedTabs.map(t => t.id));
+
+        renderTabGroup();
+    };
+
+    document.querySelector("#tabmanager-container #toolbar #toggle-view-mode").onclick = async () => {
+        viewMode = viewMode === "grid" ? "list" : "grid";
+        renderTabGroup();
+
+        await new Promise(resolve => setTimeout(resolve, 120));
+        handleSearchWebInput();
+
+        saveSettings({
+            'tabViewMode': viewMode
+        });
+    };
+});
 // Khởi tạo
 export async function initTabManager() {
+    const container = document.getElementById("tabmanager-container");
+
+    // Load giao diện
+    const html = await fetch("./features/tab/tab.html").then(r => r.text());
+    container.innerHTML = html;
+
+    // Load CSS
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "./features/tab/tab.css";
+    document.head.appendChild(link);
+
     const setting = await loadSettings('setting');
     if (setting) {
         viewMode = setting.tabViewMode || "grid";
