@@ -16,6 +16,11 @@ body {
     min-height: 700px;
 }
 
+#screen-container {
+    min-width: 700px;
+    min-height: 700px;
+}
+
 /* =========================
    Tabs
 ========================= */

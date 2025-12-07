@@ -61,7 +61,7 @@ chrome.alarms.onAlarm.addListener(async alarm => {
 
     chrome.notifications.create({
         type: "basic",
-        iconUrl: "assets/media/chrome.png",
+        iconUrl: "assets/media/logo.png",
         title: "Time to drink water 💧",
         message: "Stay hydrated!",
         priority: 2
@@ -83,6 +83,17 @@ chrome.alarms.onAlarm.addListener(async alarm => {
     }
 });
 
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg.action === "save-recording") {
+        chrome.downloads.download({
+            url: msg.blobUrl,
+            filename: msg.filename,
+            saveAs: true
+        });
+
+        sendResponse({ success: true });
+    }
+});
 
 async function setupWaterAlarms() {
     // Clear old alarms

@@ -12,7 +12,8 @@
         "contextMenus",
         "sidePanel",
         "alarms",
-        "notifications"
+        "notifications",
+        "downloads"
     ],
     "content_scripts": [
         {
@@ -25,7 +26,21 @@
             "css": [
                 "features/sticky-note/sticky-note.css"
             ]
+        },
+         {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "features/record/record-script.js"
+            ],
+            "css": [
+                "features/record/record-widget.css"
+            ]
         }
+    ],
+    "host_permissions": [
+        "*://*/*"
     ],
     "side_panel": {
         "default_path": "features/note/note-sidebar.html"

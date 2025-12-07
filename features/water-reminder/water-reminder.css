@@ -2,7 +2,7 @@
 /* Aqua Style - compact for popup */
 
 .water-root {
-    width: 320px;
+    width: 700px;
     padding: 12px;
     font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     color: #08304a;
@@ -139,7 +139,7 @@
 /* small popup responsiveness */
 @media (max-width: 360px) {
     .water-root {
-        width: 300px;
+        width: 700px;
         padding: 10px;
     }
 

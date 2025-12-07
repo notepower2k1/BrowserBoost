@@ -16,12 +16,17 @@
 3. **Sidebar Note**  
    - Cho phép note thông tin ngay trên trình duyệt
 
-3. **Sticky Note**
+4. **Sticky Note**
    - Cho phép dán note lên các trang web khác nhau (một vài trang bị hạn chế)
 
-3. **Water Remider**
+5. **Water Remider**
    - Nhắc nhở uống nước.
    - Tracking lượng nước đã uống trong ngày.
+
+6. **Screen Tool**
+   - Recording Screen
+   - Capture Screen
+   - Download image + video
 
 ## Cài đặt
 1. Tải source code về máy.  

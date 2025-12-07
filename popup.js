@@ -62,3 +62,9 @@ document.querySelector('#openNoteBtn').addEventListener('click', async () => {
         window.close();
     }
 });
+
+document.querySelector("#openRecorderBtn").addEventListener("click", async () => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    chrome.tabs.sendMessage(tab.id, { action: "open-record-widget" });
+    window.close();
+});
