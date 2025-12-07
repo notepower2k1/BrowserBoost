@@ -18,9 +18,7 @@ export async function initWaterSettings() {
     // Load Settings
     const settings = await utils.getSettings();
 
-    document.getElementById('gender').value = settings.gender || '';
     document.getElementById('weight').value = settings.weight || '';
-    document.getElementById('height').value = settings.height || '';
     document.getElementById('activity').value = settings.activity || '1.1';
     document.getElementById('dailyGoal').value = settings.goal || 2000;
 
