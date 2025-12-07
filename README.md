@@ -1,3 +1,5 @@
+![logo](https://raw.githubusercontent.com/notepower2k1/ChromeHelperTool/refs/heads/main/icon-144x144.png)
+
 # Chrome Extension: Chrome Helper Tool
 
 ## Giới thiệu
