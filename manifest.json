@@ -21,23 +21,15 @@
                 "<all_urls>"
             ],
             "js": [
-                "features/sticky-note/sticky-note.js"
-            ],
-            "css": [
-                "features/sticky-note/sticky-note.css"
-            ]
-        },
-         {
-            "matches": [
-                "<all_urls>"
-            ],
-            "js": [
+                "assets/js/html2canvas.min.js",
+                "features/sticky-note/sticky-note.js",
                 "features/record/record-script.js"
             ],
             "css": [
+                "features/sticky-note/sticky-note.css",
                 "features/record/record-widget.css"
             ]
-        }
+        }  
     ],
     "host_permissions": [
         "*://*/*"

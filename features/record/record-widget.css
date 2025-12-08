@@ -1,3 +1,4 @@
+/* ===== Widget Container ===== */
 #loom-recorder {
     position: fixed;
     top: 50px;
@@ -16,8 +17,29 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     font-family: Inter, sans-serif;
     animation: fadeIn 0.25s ease;
+    transition: width 0.25s ease, height 0.25s ease, padding 0.25s ease;
 }
 
+/* ===== Minimized ===== */
+.lr-container.minimized {
+    width: 160px;
+    padding: 8px;
+    height: auto;
+}
+
+.lr-container.minimized .lr-controls {
+    display: none;
+}
+
+.lr-container.minimized .lr-title {
+    font-size: 14px;
+}
+
+.lr-container.minimized .lr-status {
+    gap: 4px;
+}
+
+/* ===== Header ===== */
 .lr-header {
     display: flex;
     justify-content: space-between;
@@ -25,7 +47,7 @@
     margin-bottom: 14px;
 }
 
-.lr-title {
+.lr-header .lr-title {
     font-weight: 600;
     font-size: 15px;
 }
@@ -41,7 +63,7 @@
     height: 10px;
     background: #ccc;
     border-radius: 50%;
-    transition: background 0.3s;
+    transition: background 0.3s, box-shadow 0.3s;
 }
 
 .lr-status.recording .lr-dot {
@@ -49,6 +71,7 @@
     box-shadow: 0 0 6px #ff3b30;
 }
 
+/* ===== Controls ===== */
 .lr-controls {
     display: flex;
     flex-wrap: wrap;
@@ -85,6 +108,7 @@
     font-size: 16px;
 }
 
+/* Close Button */
 .lr-close {
     background: #ffe5e5 !important;
     flex: 1 1 100%;
@@ -94,6 +118,16 @@
     background: #ffd1d1 !important;
 }
 
+/* Toggle Button */
+.lr-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+}
+
+/* ===== Animations ===== */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
