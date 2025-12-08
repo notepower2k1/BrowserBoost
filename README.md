@@ -29,6 +29,7 @@
    - Recording Screen
    - Capture Screen
    - Download image + video
+   - Simple snipping Tool
 
 ## Cài đặt
 1. Tải source code về máy.  
