@@ -132,3 +132,12 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+.snip-toolbar button.active {
+    background: #4caf50 !important;
+    color: #fff;
+}
+
+.snip-toolbar button {
+    transition: 0.15s;
+}
