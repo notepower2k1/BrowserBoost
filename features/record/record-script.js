@@ -5,6 +5,16 @@ let recordStartTime = null;
 let recordTimerInterval = null;
 let isBusy = false; // true khi đang thực hiện capture/record
 let snipActive = false;
+const BLOCKED_HOSTS = [
+    "youtube.com",
+    "google.com",
+    "mail.google.com",
+    "keep.google.com",
+    "facebook.com",
+    "twitter.com",
+    "instagram.com"
+];
+
 
 // ------------------- INSERT UI -----------------------
 function injectRecorderUI() {
@@ -80,6 +90,46 @@ function injectRecorderUI() {
     };
 
     div.querySelector(".lr-capture-area").onclick = captureAreaAdvanced;
+
+
+    (async () => {
+        const supported = await isCaptureAreaSupported();
+        if (!supported) {
+            disableCaptureArea("Trang này không hỗ trợ Capture Area");
+        }
+    })();
+}
+
+async function isCaptureAreaSupported() {
+    if (isBlockedDomain()) return false;
+    if (hasCrossOriginIframe()) return false;
+    return true;
+}
+
+function isBlockedDomain() {
+    return BLOCKED_HOSTS.some(d => location.hostname.includes(d));
+}
+
+function hasCrossOriginIframe() {
+    return [...document.querySelectorAll("iframe")].some(f => {
+        try {
+            void f.contentDocument;
+            return false;
+        } catch {
+            return true;
+        }
+    });
+}
+
+
+function disableCaptureArea(reason) {
+    const btn = document.querySelector(".lr-capture-area");
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.style.opacity = "0.4";
+    btn.style.cursor = "not-allowed";
+    btn.title = reason;
 }
 
 function setButtonsLock(lock = true) {
@@ -345,7 +395,33 @@ async function captureAreaAdvanced() {
     setButtonsLock(true);
 
     try {
-        const fullCanvas = await html2canvas(document.body, { useCORS: true });
+        const fullCanvas = await html2canvas(document.body, {
+            useCORS: true,
+            allowTaint: false,
+            imageTimeout: 1500,
+            logging: false,
+            onclone(doc) {
+                doc.querySelectorAll("img").forEach(img => {
+                    img.onerror = () => img.remove();
+                });
+                doc.querySelectorAll("*").forEach(el => {
+                    const style = getComputedStyle(el);
+
+                    if (style.color.includes("oklch")) {
+                        el.style.color = "rgb(0,0,0)";
+                    }
+
+                    if (style.backgroundColor.includes("oklch")) {
+                        el.style.backgroundColor = "transparent";
+                    }
+                });
+            },
+            ignoreElements: el => {
+                const style = window.getComputedStyle(el);
+                return style.color?.includes("oklch")
+                    || style.backgroundColor?.includes("oklch");
+            }
+        });
 
         // ===== Overlay =====
         const overlay = el("div", {}, {
