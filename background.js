@@ -83,6 +83,100 @@ chrome.alarms.onAlarm.addListener(async alarm => {
     }
 });
 
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+    if (alarm.name !== "eye-relax") return;
+
+    const { eyeRelax, eyeRelaxActive } =
+        await chrome.storage.local.get(["eyeRelax", "eyeRelaxActive"]);
+
+    if (eyeRelaxActive) return;
+
+    if (!eyeRelax?.enabled) return;
+
+    await chrome.storage.local.set({ eyeRelaxActive: true });
+
+    chrome.notifications.create({
+        type: "basic",
+        iconUrl: "assets/media/logo.png",
+        title: "Eye Relax",
+        message: "Time to rest your eyes 👀"
+    });
+
+    chrome.windows.create({
+        url: chrome.runtime.getURL(
+            "features/eye-relax/relax-window.html"
+        ),
+        type: "popup",
+        focused: true,
+        width: 360,
+        height: 360
+    });
+});
+
+chrome.runtime.onMessage.addListener(async (msg) => {
+    if (msg.action === "eye-snooze") {
+        await chrome.storage.local.set({ eyeRelaxActive: false });
+
+        const minutes = msg.minutes;
+
+        const { eyeRelax } = await chrome.storage.local.get("eyeRelax");
+
+        chrome.alarms.clear("eye-relax");
+
+        // tạo alarm snooze
+        chrome.alarms.create("eye-relax", {
+            delayInMinutes: minutes
+        });
+
+        await chrome.storage.local.set({
+            eyeRelaxRuntime: {
+                snoozed: true,
+                baseInterval: eyeRelax.interval
+            }
+        });
+    }
+
+    if (msg.action === "eye-dismiss") {
+        await chrome.storage.local.set({ eyeRelaxActive: false });
+
+        const { eyeRelaxRuntime } = await chrome.storage.local.get("eyeRelaxRuntime");
+
+        if (eyeRelaxRuntime?.snoozed) {
+            chrome.alarms.clear("eye-relax");
+
+            chrome.alarms.create("eye-relax", {
+                delayInMinutes: eyeRelaxRuntime.baseInterval,
+                periodInMinutes: eyeRelaxRuntime.baseInterval
+            });
+
+            await chrome.storage.local.set({
+                eyeRelaxRuntime: { snoozed: false }
+            });
+        }
+    }
+});
+
+chrome.runtime.onMessage.addListener(async (msg) => {
+    if (msg.action === "update-eye-relax") {
+        const { eyeRelax } = await chrome.storage.local.get("eyeRelax");
+        if (!eyeRelax?.enabled) return;
+
+        chrome.alarms.clear("eye-relax");
+
+        chrome.alarms.create("eye-relax", {
+            delayInMinutes: eyeRelax.interval,
+            periodInMinutes: eyeRelax.interval
+        });
+
+        await chrome.storage.local.set({
+            eyeRelaxRuntime: {
+                snoozed: false,
+                baseInterval: eyeRelax.interval
+            }
+        });
+    }
+});
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg.action === "save-recording") {
         chrome.downloads.download({

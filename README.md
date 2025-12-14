@@ -31,6 +31,9 @@
    - Download image + video
    - Simple snipping Tool
 
+7. **Eye reminder**
+   - Simple eye relax reminder
+
 ## Cài đặt
 1. Tải source code về máy.  
 2. Mở Chrome → `chrome://extensions/` → Bật **Developer mode**.  
@@ -41,4 +44,4 @@
 - Một số tính năng cần cấp quyền truy cập bookmark và tab.  
 
 ---
-**Tác giả:** Note
+**Tác giả:** ThachNV

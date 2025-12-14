@@ -1,5 +1,5 @@
 /* features/water-reminder/water-settings.css - REPLACEMENT */
-.settings-root {
+#water-container .settings-root {
     width: 700px;
     padding: 14px 16px;
     font-family: Inter, system-ui, Roboto, Arial;
@@ -10,7 +10,7 @@
 }
 
 /* Back button */
-.back-btn {
+#water-container .back-btn {
     background: none;
     border: none;
     color: #046;
@@ -22,79 +22,18 @@
     gap: 4px;
 }
 
-.back-btn:hover {
+#water-container .back-btn:hover {
     text-decoration: underline;
 }
 
-h3 {
-    margin: 14px 0 8px;
-    font-size: 15px;
-    color: #023;
-    font-weight: 700;
-}
-
-.card {
-    background: #f6f9fc;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #d9e7f0;
-    margin-bottom: 12px;
-}
-
-.row,
-.reminder-row,
-.inline-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-.row label {
-    flex: 1;
-    font-size: 13px;
-    color: #034;
-    font-weight: 600;
-}
-
-/* Inputs */
-.row input,
-.row select {
-    flex: 1;
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid #cbe3fb;
-    background: #fff;
-    transition: 0.2s;
-}
-
-.row input:focus,
-.row select:focus {
-    outline: none;
-    border-color: #79b6ff;
-    box-shadow: 0 0 0 2px rgba(121,182,255,0.3);
-}
-
-.inline-row {
-    gap: 10px;
-}
-
-.radio-inline {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 0 0 auto;
-}
-
-.settings-root label {
+#water-container .settings-root label {
     font-size: 13px;
     color: #034;
 }
 
-.settings-root input[type="number"],
-.settings-root select,
-.settings-root input[type="time"] {
+#water-container .settings-root input[type="number"],
+#water-container .settings-root select,
+#water-container .settings-root input[type="time"] {
     padding: 8px 10px;
     border-radius: 8px;
     border: 1px solid #cfe3ef;
@@ -103,7 +42,7 @@ h3 {
 }
 
 /* small buttons */
-.btn-small {
+#water-container .btn-small {
     padding: 6px 10px;
     border-radius: 8px;
     background: linear-gradient(180deg, #e3e6eb, #d3d6db);
@@ -113,24 +52,13 @@ h3 {
     font-size: 13px;
 }
 
-.btn-small.ghost {
+#water-container .btn-small#water-container .ghost {
     background: transparent;
     border: 1px dashed #d3d6db;
 }
 
-/* primary save */
-.btn-primary {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: linear-gradient(180deg, #4db6ff, #3b9dff);
-    color: #fff;
-    border: none;
-    font-weight: 800;
-}
-
 /* schedule list items */
-.schedule-list {
+#water-container .schedule-list {
     margin-top: 8px;
     display: flex;
     flex-direction: column;
@@ -138,7 +66,7 @@ h3 {
 }
 
 /* RECOMMENDED WATER */
-.rec {
+#water-container .rec {
     margin: 10px 0 12px 0;
     font-weight: 700;
     font-size: 15px;
@@ -147,7 +75,7 @@ h3 {
     padding-left: 6px;
 }
 
-.time-item {
+#water-container .time-item {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -157,7 +85,7 @@ h3 {
     border-radius: 8px;
 }
 
-.time-item input[type="time"] {
+#water-container .time-item input[type="time"] {
     width: 110px;
     padding: 6px 8px;
     border-radius: 6px;
@@ -165,7 +93,7 @@ h3 {
 }
 
 /* remove small button */
-.time-item .remove-time {
+#water-container .time-item #water-container .remove-time {
     padding: 6px 8px;
     background: #f0baba;
     border: none;
@@ -174,50 +102,8 @@ h3 {
     font-weight: 700;
 }
 
-/* toggle switch */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 46px;
-    height: 24px;
-}
 
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    inset: 0;
-    background: #c7d4dd;
-    border-radius: 34px;
-    transition: .25s;
-}
-
-.slider:before {
-    content: "";
-    position: absolute;
-    left: 3px;
-    bottom: 3px;
-    width: 18px;
-    height: 18px;
-    background: #fff;
-    border-radius: 50%;
-    transition: .25s;
-}
-
-.switch input:checked+.slider {
-    background: #4db6ff;
-}
-
-.switch input:checked+.slider:before {
-    transform: translateX(22px);
-}
-
-/* muted text (e.g. 'min') */
-.muted {
+#water-container .muted {
     color: #667;
     font-size: 13px;
 }

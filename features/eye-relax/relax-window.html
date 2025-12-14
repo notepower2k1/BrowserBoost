@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Eye Relax</title>
+    <link rel="stylesheet" href="relax-window.css" />
+</head>
+
+<body>
+    <div class="focus-wrap">
+        <div class="ring-wrapper breathing">
+            <svg class="progress-ring" width="220" height="220">
+                <circle class="bg" cx="110" cy="110" r="96" />
+                <circle class="progress" cx="110" cy="110" r="96" />
+            </svg>
+
+            <div class="time-text" id="timeText">20s</div>
+        </div>
+
+        <div class="actions">
+            <button id="snooze5">Snooze 5m</button>
+            <button id="snooze10">Snooze 10m</button>
+            <button id="done" disabled>Done</button>
+        </div>
+    </div>
+
+    <script src="relax-window.js"></script>
+</body>
+
+</html>

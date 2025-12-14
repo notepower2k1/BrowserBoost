@@ -49,6 +49,13 @@ tabs.forEach(tab => {
             module.initWaterReminder();
             window.waterLoaded = true;
         }
+
+        // load module lazily
+        if (target === "eye-relax" && !window.eyeLoaded) {
+            const module = await import('./features/eye-relax/eye-settings.js');
+            module.initEyeRelax();
+            window.eyeLoaded = true;
+        }
     });
 });
 
@@ -57,14 +64,10 @@ document.querySelector('#openNoteBtn').addEventListener('click', async () => {
         const module = await import('./features/note/note.js');
         module.initNote();
         window.noteLoaded = true;
-
-        // Close popup
-        window.close();
     }
 });
 
 document.querySelector("#openRecorderBtn").addEventListener("click", async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     chrome.tabs.sendMessage(tab.id, { action: "open-record-widget" });
-    window.close();
 });
