@@ -236,91 +236,6 @@ function dragElement(el) {
     }
 }
 
-async function captureArea() {
-    if (isBusy) return; // nếu đang bận thì không làm gì
-    setButtonsLock(true);
-
-    try {
-        // 1️⃣ Capture toàn bộ trang hiện tại
-        const canvasFull = await html2canvas(document.body);
-
-        // 2️⃣ Overlay khoanh vùng
-        const selection = await new Promise((resolve) => {
-            const overlay = document.createElement("div");
-            overlay.style.position = "fixed";
-            overlay.style.top = 0;
-            overlay.style.left = 0;
-            overlay.style.width = "100%";
-            overlay.style.height = "100%";
-            overlay.style.cursor = "crosshair";
-            overlay.style.zIndex = 99999999;
-            overlay.style.background = "rgba(0,0,0,0.1)";
-            document.body.appendChild(overlay);
-
-            let startX, startY, rect;
-
-            overlay.onmousedown = (e) => {
-                startX = e.clientX;
-                startY = e.clientY;
-
-                rect = document.createElement("div");
-                rect.style.position = "absolute";
-                rect.style.border = "2px dashed #fff";
-                rect.style.background = "rgba(255,255,255,0.2)";
-                rect.style.left = startX + "px";
-                rect.style.top = startY + "px";
-                overlay.appendChild(rect);
-
-                overlay.onmousemove = (ev) => {
-                    const w = ev.clientX - startX;
-                    const h = ev.clientY - startY;
-                    rect.style.width = Math.abs(w) + "px";
-                    rect.style.height = Math.abs(h) + "px";
-                    rect.style.left = (w < 0 ? ev.clientX : startX) + "px";
-                    rect.style.top = (h < 0 ? ev.clientY : startY) + "px";
-                };
-
-                overlay.onmouseup = (ev) => {
-                    overlay.onmousemove = null;
-                    const x = parseInt(rect.style.left);
-                    const y = parseInt(rect.style.top);
-                    const w = parseInt(rect.style.width);
-                    const h = parseInt(rect.style.height);
-                    document.body.removeChild(overlay);
-                    resolve({ x, y, width: w, height: h });
-                };
-            };
-        });
-
-        // 3️⃣ Crop theo vùng chọn
-        const croppedCanvas = document.createElement("canvas");
-        croppedCanvas.width = selection.width;
-        croppedCanvas.height = selection.height;
-        const ctx = croppedCanvas.getContext("2d");
-        ctx.drawImage(
-            canvasFull,
-            selection.x, selection.y, selection.width, selection.height,
-            0, 0, selection.width, selection.height
-        );
-
-        const dataUrl = croppedCanvas.toDataURL("image/png");
-
-        // 4️⃣ Popup preview trước khi lưu
-        const confirmed = await showPreview(dataUrl, false);
-        if (confirmed) {
-            chrome.runtime.sendMessage({
-                action: "save-recording",
-                blobUrl: dataUrl,
-                filename: `capture-area-${Date.now()}.png`
-            });
-        }
-    } catch (err) {
-        console.error("Capture failed:", err);
-    } finally {
-        setButtonsLock(false); // unlock nút sau khi xong
-    }
-}
-
 function showPreview(dataUrl, isVideo = false) {
     return new Promise((resolve) => {
         // Tạo overlay
@@ -538,23 +453,36 @@ async function captureAreaAdvanced() {
             toolbar.style.pointerEvents = "auto";
             box.style.overflow = "visible";
 
-            const btnDraw = el("button", { textContent: "✏" });
-            const btnText = el("button", { textContent: "T" });
-            const btnBlur = el("button", { textContent: "⬛" });
-            const btnUndo = el("button", { textContent: "↩" });
-            const btnClear = el("button", { textContent: "🗑" });
-            const btnOk = el("button", { textContent: "✔" });
-            const btnCancel = el("button", { textContent: "✖" });
+            const btnDraw = el("button", { innerHTML: "✏️" });
+            const btnText = el("button", { innerHTML: "🔤" });
+            const btnBlur = el("button", { innerHTML: "🌫️" });
+            const btnRect = el("button", { innerHTML: "▭" });
+            const btnCircle = el("button", { innerHTML: "◯" });
+            const btnUndo = el("button", { innerHTML: "↩️" });
+            const btnClear = el("button", { innerHTML: "🗑️" });
+            const btnOk = el("button", { innerHTML: "✔️" });
+            const btnCancel = el("button", { innerHTML: "✖️" });
 
-            [btnDraw, btnText, btnBlur, btnUndo, btnClear, btnOk, btnCancel].forEach(b => {
-                b.style.padding = "6px 10px";
-                b.style.borderRadius = "6px";
+            [
+                btnDraw, btnText, btnBlur,
+                btnRect, btnCircle,
+                btnUndo, btnClear,
+                btnOk, btnCancel
+            ].forEach(b => {
+                b.style.width = "34px";
+                b.style.height = "34px";
+                b.style.display = "flex";
+                b.style.alignItems = "center";
+                b.style.justifyContent = "center";
+                b.style.fontSize = "16px";
+                b.style.borderRadius = "8px";
                 b.style.border = "none";
                 b.style.cursor = "pointer";
                 b.style.background = "#fff";
+                b.style.boxShadow = "0 1px 4px rgba(0,0,0,.2)";
             });
 
-            toolbar.append(btnDraw, btnText, btnBlur, btnUndo, btnClear, btnOk, btnCancel);
+            toolbar.append(btnDraw, btnText, btnBlur, btnRect, btnCircle, btnUndo, btnClear, btnOk, btnCancel);
 
             const colorPicker = el("input");
             colorPicker.type = "color";
@@ -591,18 +519,20 @@ async function captureAreaAdvanced() {
             let mode = "draw";
             let drawColor = "#ff0000";
             let drawSize = 3;
+            let shapeStart = null;
+            let previewSnap = null;
 
             btnDraw.classList.add("active");
 
             let drawing = false;
             const stack = [];
 
-            function snap() {
+            function takeSnapshot() {
                 const c = document.createElement("canvas");
                 c.width = annCanvas.width;
                 c.height = annCanvas.height;
                 c.getContext("2d").drawImage(annCanvas, 0, 0);
-                stack.push(c);
+                return c;
             }
 
             function setMode(newMode, btn) {
@@ -649,6 +579,9 @@ async function captureAreaAdvanced() {
             btnDraw.onclick = () => setMode("draw", btnDraw);
             btnText.onclick = () => setMode("text", btnText);
             btnBlur.onclick = () => setMode("blur", btnBlur);
+            btnRect.onclick = () => setMode("shape-rect", btnRect);
+            btnCircle.onclick = () => setMode("shape-ellipse", btnCircle);
+
             colorPicker.oninput = () => drawColor = colorPicker.value;
             sizePicker.oninput = () => drawSize = +sizePicker.value;
 
@@ -680,8 +613,15 @@ async function captureAreaAdvanced() {
                 const x = e.clientX - r.left;
                 const y = e.clientY - r.top;
 
+                if (mode.startsWith("shape")) {
+                    shapeStart = { x, y };
+                    previewSnap = takeSnapshot();
+                    drawing = true;
+                    return;
+                }
+
                 if (mode === "draw" || mode === "blur") {
-                    snap();
+                    takeSnapshot();
                     drawing = true;
                     ctx.beginPath();
                     ctx.moveTo(x, y);
@@ -690,7 +630,7 @@ async function captureAreaAdvanced() {
                 if (mode === "text") {
                     const txt = prompt("Text:");
                     if (txt) {
-                        snap();
+                        takeSnapshot();
                         ctx.fillStyle = drawColor;
                         ctx.font = "18px Arial";
                         ctx.fillText(txt, x, y);
@@ -704,6 +644,44 @@ async function captureAreaAdvanced() {
                 const r = annCanvas.getBoundingClientRect();
                 const x = e.clientX - r.left;
                 const y = e.clientY - r.top;
+
+                if (mode.startsWith("shape")) {
+                    // reset về snapshot
+                    ctx.clearRect(0, 0, annCanvas.width, annCanvas.height);
+                    ctx.drawImage(previewSnap, 0, 0);
+
+                    const w = x - shapeStart.x;
+                    const h = y - shapeStart.y;
+
+                    ctx.strokeStyle = drawColor;
+                    ctx.lineWidth = drawSize;
+                    ctx.setLineDash([]); // hoặc [6,4] nếu muốn dashed
+
+                    if (mode === "shape-rect") {
+                        ctx.strokeRect(
+                            shapeStart.x,
+                            shapeStart.y,
+                            w,
+                            h
+                        );
+                    }
+
+                    if (mode === "shape-ellipse") {
+                        ctx.beginPath();
+                        ctx.ellipse(
+                            shapeStart.x + w / 2,
+                            shapeStart.y + h / 2,
+                            Math.abs(w / 2),
+                            Math.abs(h / 2),
+                            0,
+                            0,
+                            Math.PI * 2
+                        );
+                        ctx.stroke();
+                    }
+
+                    return;
+                }
 
                 if (mode === "draw") {
                     ctx.globalCompositeOperation = "source-over";
@@ -753,9 +731,14 @@ async function captureAreaAdvanced() {
             };
 
             annCanvas.onmouseup = () => {
+                if (drawing && mode.startsWith("shape")) {
+                    drawing = false;
+                    shapeStart = null;
+                    previewSnap = null;
+                    return;
+                }
+
                 drawing = false;
-                ctx.filter = "none";
-                ctx.globalCompositeOperation = "source-over";
             };
 
             btnUndo.onclick = () => {
@@ -767,80 +750,71 @@ async function captureAreaAdvanced() {
             };
 
             btnClear.onclick = () => {
-                snap();
+                takeSnapshot();
                 ctx.clearRect(0, 0, annCanvas.width, annCanvas.height);
             };
 
-            // ---- Thay thế toàn bộ btnOk.onclick và cleanup bằng đoạn này ----
             btnOk.onclick = async () => {
                 try {
-                    // Lấy rect hiện tại (sau khi user có thể đã resize/move)
-                    const rectNow = box.getBoundingClientRect();
+                    const rect = box.getBoundingClientRect();
 
-                    // Tính scale từ fullCanvas (html2canvas) -> toàn trang (document)
-                    // fullCanvas thường có kích thước tương ứng với document.documentElement.scrollWidth/scrollHeight
-                    const pageWidth = document.documentElement.scrollWidth;
-                    const pageHeight = document.documentElement.scrollHeight;
-                    const scaleX = fullCanvas.width / pageWidth;
-                    const scaleY = fullCanvas.height / pageHeight;
+                    const scale = fullCanvas.width / window.innerWidth;
+                    const sx = Math.round(rect.left * scale);
+                    const sy = Math.round(rect.top * scale);
+                    const sw = Math.round(rect.width * scale);
+                    const sh = Math.round(rect.height * scale);
 
-                    // Tính toạ độ thực tế trên fullCanvas (bao gồm scroll)
-                    const sx = Math.round((rectNow.left + window.scrollX) * scaleX);
-                    const sy = Math.round((rectNow.top + window.scrollY) * scaleY);
-                    const sw = Math.round(rectNow.width * scaleX);
-                    const sh = Math.round(rectNow.height * scaleY);
-
-                    // Ẩn overlay (không remove) để popup preview không bị che
+                    // Ẩn overlay + box để preview không bị chặn
                     overlay.style.display = "none";
+                    box.style.display = "none";
 
-                    // Crop from fullCanvas at the computed coords
+                    // ---- Crop ----
                     const crop = document.createElement("canvas");
-                    crop.width = sw || 1;
-                    crop.height = sh || 1;
+                    crop.width = Math.max(1, sw);
+                    crop.height = Math.max(1, sh);
+
                     const cctx = crop.getContext("2d");
-                    cctx.drawImage(fullCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
-
-                    // Merge annotation — annCanvas is in CSS pixels of the box.
-                    // Need to scale annotation to the pixel size (sw,sh).
-                    const annTmp = document.createElement("canvas");
-                    annTmp.width = sw || 1;
-                    annTmp.height = sh || 1;
-                    const atx = annTmp.getContext("2d");
-
-                    // scale from box CSS size -> cropped pixel size
-                    const scaleAnnX = (sw / rectNow.width) || 1;
-                    const scaleAnnY = (sh / rectNow.height) || 1;
-
-                    // draw annCanvas scaled onto annTmp (use drawImage with geometry rather than ctx.scale to avoid transform state)
-                    atx.drawImage(annCanvas,
-                        0, 0, annCanvas.width, annCanvas.height,
-                        0, 0, Math.round(annCanvas.width * scaleAnnX), Math.round(annCanvas.height * scaleAnnY)
+                    cctx.drawImage(
+                        fullCanvas,
+                        sx, sy, sw, sh,
+                        0, 0, sw, sh
                     );
 
-                    // composite annotations on top
-                    cctx.drawImage(annTmp, 0, 0, sw, sh);
+                    // ---- Merge annotation ----
+                    const annTmp = document.createElement("canvas");
+                    annTmp.width = sw;
+                    annTmp.height = sh;
 
-                    // export and preview
+                    const atx = annTmp.getContext("2d");
+                    atx.drawImage(
+                        annCanvas,
+                        0, 0, annCanvas.width, annCanvas.height,
+                        0, 0, sw, sh
+                    );
+
+                    cctx.drawImage(annTmp, 0, 0);
+
                     const dataUrl = crop.toDataURL("image/png");
 
-                    // showPreview should return true/false; overlay hidden so its buttons are clickable
                     const confirmed = await showPreview(dataUrl, false);
 
                     if (confirmed) {
-                        // user saved → send and cleanup fully
                         chrome.runtime.sendMessage({
                             action: "save-recording",
                             blobUrl: dataUrl,
                             filename: `capture-${Date.now()}.png`
                         });
-                    }
 
-                    // fully remove overlay & box
-                    cleanup(true);
+                        cleanup(true);
+                    } else {
+                        overlay.style.display = "";
+                        box.style.display = "";
+                    }
 
                 } catch (err) {
                     console.error("btnOk error:", err);
-                    try { overlay.style.display = ""; box.style.visibility = "visible"; } catch (e) { }
+                    overlay.style.display = "";
+                    box.style.display = "";
                 }
             };
 

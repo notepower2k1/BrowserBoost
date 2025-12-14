@@ -14,7 +14,7 @@
     background: #ffffff;
     border-radius: 14px;
     padding: 14px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     font-family: Inter, sans-serif;
     animation: fadeIn 0.25s ease;
     transition: width 0.25s ease, height 0.25s ease, padding 0.25s ease;
@@ -129,8 +129,15 @@
 
 /* ===== Animations ===== */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .snip-toolbar button.active {
@@ -140,4 +147,6 @@
 
 .snip-toolbar button {
     transition: 0.15s;
+    font-family: Arial, sans-serif !important;
+    font-weight: 600;
 }
