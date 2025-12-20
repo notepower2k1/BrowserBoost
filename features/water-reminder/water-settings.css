@@ -1,39 +1,45 @@
-/* features/water-reminder/water-settings.css - REPLACEMENT */
-#water-container .settings-root {
-    width: 700px;
-    padding: 14px 16px;
-    font-family: Inter, system-ui, Roboto, Arial;
-    color: #073044;
-    background: #f7fbff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
+/* features/water-reminder/water-settings.css - UPDATED */
 
-/* Back button */
-#water-container .back-btn {
-    background: none;
-    border: none;
-    color: #046;
-    font-weight: 700;
-    cursor: pointer;
-    margin-bottom: 10px;
+/* Background gradient và căn giữa */
+body {
+    margin: 0;
+    height: 100vh;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 4px;
+    font-family: Inter, system-ui, Roboto, Arial;
+    background: linear-gradient(135deg, #4db6ff, #3b9dff);
 }
 
-#water-container .back-btn:hover {
+/* Card chính chứa toàn bộ settings */
+.settings-root {
+    width: 700px;
+    max-width: 90%;
+    padding: 24px 28px;
+    background: #f7fbff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    color: #073044;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
+.back-btn:hover {
     text-decoration: underline;
 }
 
-#water-container .settings-root label {
+/* Labels */
+.settings-root label {
     font-size: 13px;
     color: #034;
 }
 
-#water-container .settings-root input[type="number"],
-#water-container .settings-root select,
-#water-container .settings-root input[type="time"] {
+/* Inputs */
+.settings-root input[type="number"],
+.settings-root select,
+.settings-root input[type="time"] {
     padding: 8px 10px;
     border-radius: 8px;
     border: 1px solid #cfe3ef;
@@ -41,8 +47,8 @@
     background: #fff;
 }
 
-/* small buttons */
-#water-container .btn-small {
+/* Small buttons */
+.btn-small {
     padding: 6px 10px;
     border-radius: 8px;
     background: linear-gradient(180deg, #e3e6eb, #d3d6db);
@@ -52,21 +58,21 @@
     font-size: 13px;
 }
 
-#water-container .btn-small#water-container .ghost {
+.btn-small.ghost {
     background: transparent;
     border: 1px dashed #d3d6db;
 }
 
-/* schedule list items */
-#water-container .schedule-list {
+/* Schedule list items */
+.schedule-list {
     margin-top: 8px;
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* RECOMMENDED WATER */
-#water-container .rec {
+/* Recommended water */
+.rec {
     margin: 10px 0 12px 0;
     font-weight: 700;
     font-size: 15px;
@@ -75,7 +81,8 @@
     padding-left: 6px;
 }
 
-#water-container .time-item {
+/* Time item */
+.time-item {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -85,15 +92,14 @@
     border-radius: 8px;
 }
 
-#water-container .time-item input[type="time"] {
+.time-item input[type="time"] {
     width: 110px;
     padding: 6px 8px;
     border-radius: 6px;
     border: 1px solid #cfe3ef;
 }
 
-/* remove small button */
-#water-container .time-item #water-container .remove-time {
+.time-item .remove-time {
     padding: 6px 8px;
     background: #f0baba;
     border: none;
@@ -102,8 +108,136 @@
     font-weight: 700;
 }
 
-
-#water-container .muted {
+.muted {
     color: #667;
     font-size: 13px;
+}
+
+/* Primary save button */
+.btn-primary {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #4db6ff, #3b9dff);
+    color: #fff;
+    border: none;
+    font-weight: 800;
+    font-size: 15px;
+}
+
+/* Card nội dung reminder */
+.card {
+    background: #e6f0ff;
+    padding: 16px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Reminder row */
+.reminder-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.row,
+.reminder-row,
+.inline-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.row label {
+    flex: 1;
+    font-size: 13px;
+    color: #034;
+    font-weight: 600;
+}
+
+/* Inputs */
+.row input,
+.row select {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #cbe3fb;
+    background: #fff;
+    transition: 0.2s;
+}
+
+.row input:focus,
+.row select:focus {
+    outline: none;
+    border-color: #79b6ff;
+    box-shadow: 0 0 0 2px rgba(121, 182, 255, 0.3);
+}
+
+.inline-row {
+    gap: 10px;
+}
+
+.radio-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+}
+
+/* primary save */
+.btn-primary {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #4db6ff, #3b9dff);
+    color: #fff;
+    border: none;
+    font-weight: 800;
+}
+
+/* toggle switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background: #c7d4dd;
+    border-radius: 34px;
+    transition: .25s;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    transition: .25s;
+}
+
+.switch input:checked+.slider {
+    background: #4db6ff;
+}
+
+.switch input:checked+.slider:before {
+    transform: translateX(22px);
 }

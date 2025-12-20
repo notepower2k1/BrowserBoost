@@ -1,5 +1,6 @@
 (function () {
-    const KEY = 'stickyNotes';
+    const DOMAIN = location.hostname;
+    const KEY = `stickyNotes_${DOMAIN}`;
     let notes = [];
 
     // Lấy note từ chrome.storage

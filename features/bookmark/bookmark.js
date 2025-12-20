@@ -149,7 +149,6 @@ async function renderGroups() {
     }
 
     attachGroupEvents();
-    enableGroupDrag();
     enableWebsiteDrag();
 
     setupGroupBoxContextMenu();

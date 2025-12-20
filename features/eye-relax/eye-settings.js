@@ -2,7 +2,8 @@ import { getLocalStorage, setLocalStorage } from "../../helper.js";
 
 const DEFAULT = {
     enabled: true,
-    interval: 20,
+    interval: 20, // phút
+    relaxDuration: 20 // giây
 };
 
 export async function initEyeRelax() {
@@ -28,6 +29,7 @@ export async function initEyeRelax() {
     // Apply to UI
     document.getElementById("er-enabled").checked = setting.enabled;
     document.getElementById("er-interval").value = setting.interval;
+    document.getElementById("er-duration").value = setting.relaxDuration;
 
     const toggleEl = document.getElementById("er-enabled");
 
@@ -35,14 +37,16 @@ export async function initEyeRelax() {
         const newSetting = {
             enabled: document.getElementById("er-enabled").checked,
             interval: Number(document.getElementById("er-interval").value) || 20,
+            relaxDuration: Number(document.getElementById("er-duration").value) || 20
         };
 
         await setLocalStorage("eyeRelax", newSetting);
 
-        // báo background cập nhật alarm
-        chrome.runtime.sendMessage({
-            action: "update-eye-relax"
-        });
+        // Reset trạng thái active khi bật/tắt
+        await chrome.storage.local.set({ eyeRelaxActive: false });
+
+        // rebuild alarm
+        chrome.runtime.sendMessage({ action: "update-eye-relax" });
     });
 
     // Save

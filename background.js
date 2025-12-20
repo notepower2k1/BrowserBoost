@@ -46,66 +46,42 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
 });
 
-chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.action === "rebuild-water-reminder") {
-        setupWaterAlarms();
-    }
-});
 
-chrome.alarms.onAlarm.addListener(async alarm => {
-    if (!alarm.name.startsWith("water_reminder")) return;
+async function getEyeRelaxSettings() {
+    const res = await chrome.storage.local.get("eyeRelax");
+    return res.eyeRelax || {};
+}
 
-    const settings = (await chrome.storage.local.get('water_settings_v1')).water_settings_v1 || {};
-
-    if (!settings.enabled) return; // <<--- thêm dòng này
-
-    chrome.notifications.create({
-        type: "basic",
-        iconUrl: "assets/media/logo.png",
-        title: "Time to drink water 💧",
-        message: "Stay hydrated!",
-        priority: 2
+async function scheduleEyeRelaxAlarm(delayMinutes) {
+    chrome.alarms.clear("eye-relax");
+    chrome.alarms.create("eye-relax", {
+        when: Date.now() + (delayMinutes || 20) * 60 * 1000
     });
-
-    if (settings.sound) {
-        try {
-            const ctx = new (self.AudioContext || self.webkitAudioContext)();
-            const o = ctx.createOscillator();
-            const g = ctx.createGain();
-            o.type = "sine";
-            o.frequency.value = 880;
-            g.gain.value = 0.02;
-            o.connect(g);
-            g.connect(ctx.destination);
-            o.start();
-            setTimeout(() => { o.stop(); ctx.close(); }, 350);
-        } catch (e) { }
-    }
-});
+}
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name !== "eye-relax") return;
 
-    const { eyeRelax, eyeRelaxActive } =
-        await chrome.storage.local.get(["eyeRelax", "eyeRelaxActive"]);
+    const settings = await getEyeRelaxSettings();
+    if (!settings.enabled) return;
 
+    const { eyeRelaxActive } = await chrome.storage.local.get("eyeRelaxActive");
     if (eyeRelaxActive) return;
 
-    if (!eyeRelax?.enabled) return;
-
+    // Mark active
     await chrome.storage.local.set({ eyeRelaxActive: true });
 
+    // Show notification
     chrome.notifications.create({
         type: "basic",
-        iconUrl: "assets/media/logo.png",
+        iconUrl: "assets/media/eye.png",
         title: "Eye Relax",
-        message: "Time to rest your eyes 👀"
+        message: `Time to rest your eyes 👀`
     });
 
+    // Open relax popup
     chrome.windows.create({
-        url: chrome.runtime.getURL(
-            "features/eye-relax/relax-window.html"
-        ),
+        url: chrome.runtime.getURL("features/eye-relax/relax-window.html"),
         type: "popup",
         focused: true,
         width: 360,
@@ -114,65 +90,44 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 });
 
 chrome.runtime.onMessage.addListener(async (msg) => {
+    const settings = await getEyeRelaxSettings();
+
     if (msg.action === "eye-snooze") {
         await chrome.storage.local.set({ eyeRelaxActive: false });
-
-        const minutes = msg.minutes;
-
-        const { eyeRelax } = await chrome.storage.local.get("eyeRelax");
-
-        chrome.alarms.clear("eye-relax");
-
-        // tạo alarm snooze
-        chrome.alarms.create("eye-relax", {
-            delayInMinutes: minutes
-        });
+        const minutes = msg.minutes || settings.interval || 20;
+        await scheduleEyeRelaxAlarm(minutes);
 
         await chrome.storage.local.set({
-            eyeRelaxRuntime: {
-                snoozed: true,
-                baseInterval: eyeRelax.interval
-            }
+            eyeRelaxRuntime: { snoozed: true, baseInterval: settings.interval }
         });
     }
 
     if (msg.action === "eye-dismiss") {
         await chrome.storage.local.set({ eyeRelaxActive: false });
 
-        const { eyeRelaxRuntime } = await chrome.storage.local.get("eyeRelaxRuntime");
-
-        if (eyeRelaxRuntime?.snoozed) {
-            chrome.alarms.clear("eye-relax");
-
-            chrome.alarms.create("eye-relax", {
-                delayInMinutes: eyeRelaxRuntime.baseInterval,
-                periodInMinutes: eyeRelaxRuntime.baseInterval
-            });
-
-            await chrome.storage.local.set({
-                eyeRelaxRuntime: { snoozed: false }
-            });
+        const runtime = (await chrome.storage.local.get("eyeRelaxRuntime")).eyeRelaxRuntime;
+        if (runtime?.snoozed) {
+            // reset interval alarm
+            await scheduleEyeRelaxAlarm(runtime.baseInterval);
+            await chrome.storage.local.set({ eyeRelaxRuntime: { snoozed: false } });
+        } else {
+            // schedule next normal interval
+            await scheduleEyeRelaxAlarm(settings.interval);
         }
     }
-});
 
-chrome.runtime.onMessage.addListener(async (msg) => {
     if (msg.action === "update-eye-relax") {
-        const { eyeRelax } = await chrome.storage.local.get("eyeRelax");
-        if (!eyeRelax?.enabled) return;
+        const settings = await getEyeRelaxSettings();
+        if (!settings.enabled) return;
 
-        chrome.alarms.clear("eye-relax");
+        // Reset active
+        await chrome.storage.local.set({ eyeRelaxActive: false });
 
-        chrome.alarms.create("eye-relax", {
-            delayInMinutes: eyeRelax.interval,
-            periodInMinutes: eyeRelax.interval
-        });
+        // Schedule next one-shot
+        await scheduleEyeRelaxAlarm(settings.interval);
 
         await chrome.storage.local.set({
-            eyeRelaxRuntime: {
-                snoozed: false,
-                baseInterval: eyeRelax.interval
-            }
+            eyeRelaxRuntime: { snoozed: false, baseInterval: settings.interval }
         });
     }
 });
@@ -189,48 +144,129 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
 });
 
-async function setupWaterAlarms() {
-    // Clear old alarms
+/* ===============================
+   Message listener
+================================ */
+chrome.runtime.onMessage.addListener(async (msg) => {
+    if (msg.action === "rebuild-water-reminder") {
+        await clearAllWaterAlarms();
+
+        const settings = await getWaterSettings();
+        if (!settings || !settings.enabled) return;
+
+        if (settings.reminderMode === "interval") {
+            scheduleNextInterval(settings.intervalMinutes);
+        }
+
+        if (settings.reminderMode === "schedule") {
+            (settings.scheduleTimes || []).forEach(time => {
+                scheduleNextScheduleTime(time);
+            });
+        }
+    }
+});
+
+/* ===============================
+   Alarm handler (ONE-SHOT)
+================================ */
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+    const settings = await getWaterSettings();
+    if (!settings.enabled) return;
+
+    /* ---------- INTERVAL ---------- */
+    if (alarm.name === "water_interval") {
+        notify(settings);
+
+        // schedule next interval
+        scheduleNextInterval(settings.intervalMinutes);
+        return;
+    }
+
+    /* ---------- SCHEDULE ---------- */
+    if (alarm.name.startsWith("water_schedule_")) {
+        notify(settings);
+
+        const time = alarm.name.replace("water_schedule_", "");
+        scheduleNextScheduleTime(time);
+    }
+});
+
+/* ===============================
+   Interval
+================================ */
+function scheduleNextInterval(intervalMinutes = 60) {
+    chrome.alarms.create("water_interval", {
+        when: Date.now() + intervalMinutes * 60 * 1000
+    });
+}
+
+/* ===============================
+   Schedule fixed time
+================================ */
+function scheduleNextScheduleTime(time) {
+    const [h, m] = time.split(":").map(Number);
+    const now = new Date();
+
+    let target = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        h, m, 0
+    ).getTime();
+
+    if (target <= Date.now()) {
+        target += 24 * 60 * 60 * 1000;
+    }
+
+    chrome.alarms.create(`water_schedule_${time}`, {
+        when: target
+    });
+}
+
+/* ===============================
+   Clear all water alarms
+================================ */
+async function clearAllWaterAlarms() {
     const alarms = await chrome.alarms.getAll();
     for (const a of alarms) {
-        if (a.name.startsWith("water_reminder")) {
+        if (a.name.startsWith("water_")) {
             chrome.alarms.clear(a.name);
         }
     }
+}
 
-    // Load settings
-    const settings = (await chrome.storage.local.get("water_settings_v1")).water_settings_v1;
-    if (!settings) return;
+function notify(settings) {
+    chrome.notifications.create({
+        type: "basic",
+        iconUrl: "assets/media/water.png",
+        title: "Time to drink water 💧",
+        message: "Stay hydrated!",
+        priority: 2
+    });
 
-    // MODE 1: Interval
-    if (settings.mode === "interval") {
-        chrome.alarms.create("water_reminder", {
-            periodInMinutes: settings.intervalMinutes
-        });
-    }
-
-    // MODE 2: Fixed Times
-    if (settings.mode === "schedule") {
-        settings.scheduleTimes.forEach(time => {
-            const [h, m] = time.split(":").map(Number);
-            const now = new Date();
-
-            let target = new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate(),
-                h, m, 0
-            ).getTime();
-
-            if (target <= Date.now()) target += 24 * 60 * 60 * 1000; // next day
-
-            chrome.alarms.create(`water_reminder_${time}`, {
-                when: target,
-                periodInMinutes: 24 * 60
-            });
-        });
+    if (settings.sound) {
+        try {
+            const ctx = new (self.AudioContext || self.webkitAudioContext)();
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.frequency.value = 880;
+            g.gain.value = 0.02;
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.start();
+            setTimeout(() => { o.stop(); ctx.close(); }, 350);
+        } catch { }
     }
 }
+
+/* ===============================
+   Settings loader
+================================ */
+async function getWaterSettings() {
+    const res = await chrome.storage.local.get("water_settings_v1");
+    return res.water_settings_v1 || {};
+}
+
 async function handleAddBookmark(tab) {
     if (!tab || !tab.url) return;
 

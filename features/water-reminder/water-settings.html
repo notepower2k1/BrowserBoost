@@ -1,81 +1,91 @@
-<!-- features/water-reminder/water-settings.html -->
-<div class="settings-root">
-    <button id="backToMain" class="back-btn">← Back</button>
+<!DOCTYPE html>
+<html lang="en">
 
-    <h3>Personal Info</h3>
-    <div class="row">
-        <label>Weight (kg)</label>
-        <input id="weight" type="number" min="20" max="300" />
+<head>
+    <meta charset="UTF-8">
+    <title>Water Reminder Settings</title>
+    <link rel="stylesheet" href="water-settings.css">
+</head>
+
+<body>
+    <!-- features/water-reminder/water-settings.html -->
+    <div class="settings-root">
+        <h3>Personal Info</h3>
+        <div class="row">
+            <label>Weight (kg)</label>
+            <input id="weight" type="number" min="20" max="300" />
+        </div>
+        <div class="row">
+            <label>Activity Level</label>
+            <select id="activity">
+                <option value="1.0">Low</option>
+                <option value="1.1">Light</option>
+                <option value="1.2">Moderate</option>
+                <option value="1.35">Active</option>
+            </select>
+        </div>
+        <button class="btn-small" id="calcRec">Calculate Recommended</button>
+        <div class="rec">Recommended: <span id="recValue">--</span> ml/day</div>
+
+        <hr />
+        <h3>Daily Goal</h3>
+        <div class="row">
+            <label>Daily Goal (ml)</label>
+            <input id="dailyGoal" type="number" min="200" />
+        </div>
+        <button class="btn-small" id="saveGoal">Save Goal</button>
+
+        <hr />
+
+        <!-- Reminder Mode (replace current Reminder block) -->
+        <h3>Reminder Mode</h3>
+
+        <div class="card">
+
+            <!-- ON/OFF -->
+            <div class="reminder-row">
+                <span>Reminder</span>
+                <label class="switch">
+                    <input type="checkbox" id="reminder-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- Interval Mode -->
+            <div class="inline-row">
+                <label class="radio-inline">
+                    <input type="radio" name="reminderMode" value="interval">
+                    <span>Every minutes</span>
+                </label>
+                <input id="interval-minutes" type="number" min="5" value="60" />
+            </div>
+
+            <!-- Schedule Mode -->
+            <div class="inline-row">
+                <label class="radio-inline">
+                    <input type="radio" name="reminderMode" value="schedule">
+                    <span>Fixed times</span>
+                </label>
+            </div>
+
+            <!-- Schedule list (items appended here) -->
+            <div id="schedule-list" class="schedule-list"></div>
+
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button id="add-time" class="btn-small">Add time</button>
+            </div>
+
+            <div class="inline-row" style="margin-top:12px;">
+                <label style="display:flex; align-items:center; gap:8px;">
+                    <input id="sound" type="checkbox" />
+                    <span>Play sound</span>
+                </label>
+            </div>
+        </div>
+
+        <button id="save-settings" class="btn-primary" style="margin-top:12px;">Save Reminder Settings</button>
+
     </div>
-    <div class="row">
-        <label>Activity Level</label>
-        <select id="activity">
-            <option value="1.0">Low</option>
-            <option value="1.1">Light</option>
-            <option value="1.2">Moderate</option>
-            <option value="1.35">Active</option>
-        </select>
-    </div>
-    <button class="btn-small" id="calcRec">Calculate Recommended</button>
-    <div class="rec">Recommended: <span id="recValue">--</span> ml/day</div>
+</body>
 
-    <hr />
-    <h3>Daily Goal</h3>
-    <div class="row">
-        <label>Daily Goal (ml)</label>
-        <input id="dailyGoal" type="number" min="200" />
-    </div>
-    <button class="btn-small" id="saveGoal">Save Goal</button>
-
-    <hr />
-
-    <!-- Reminder Mode (replace current Reminder block) -->
-    <h3>Reminder Mode</h3>
-
-    <div class="card">
-
-        <!-- ON/OFF -->
-        <div class="reminder-row">
-            <span>Reminder</span>
-            <label class="switch">
-                <input type="checkbox" id="reminder-toggle">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <!-- Interval Mode -->
-        <div class="inline-row">
-            <label class="radio-inline">
-                <input type="radio" name="reminderMode" value="interval">
-                <span>Every</span>
-            </label>
-            <input id="interval-minutes" type="number" min="5" value="60" />
-            <span class="muted">min</span>
-        </div>
-
-        <!-- Schedule Mode -->
-        <div class="inline-row">
-            <label class="radio-inline">
-                <input type="radio" name="reminderMode" value="schedule">
-                <span>Fixed times</span>
-            </label>
-        </div>
-
-        <!-- Schedule list (items appended here) -->
-        <div id="schedule-list" class="schedule-list"></div>
-
-        <div style="display:flex; gap:8px; margin-top:8px;">
-            <button id="add-time" class="btn-small">Add time</button>
-        </div>
-
-        <div class="inline-row" style="margin-top:12px;">
-            <label style="display:flex; align-items:center; gap:8px;">
-                <input id="sound" type="checkbox" />
-                <span>Play sound</span>
-            </label>
-        </div>
-    </div>
-
-    <button id="save-settings" class="btn-primary" style="margin-top:12px;">Save Reminder Settings</button>
-
-</div>
+</html>

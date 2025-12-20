@@ -98,9 +98,9 @@ function setupEventHandlers() {
     // settings button
     const settingsBtn = document.getElementById("openSettings");
     if (settingsBtn) settingsBtn.addEventListener("click", async () => {
-        // lazy load settings module
-        const module = await import('./water-settings.js');
-        module.initWaterSettings();
+        chrome.tabs.create({
+            url: chrome.runtime.getURL('features/water-reminder/water-settings.html')
+        });
     });
 
     // reset today's intake

@@ -1,64 +1,86 @@
+import { saveSettings, loadSettings } from "./helper.js";
+
 const tabs = document.querySelectorAll(".tab-btn");
 const contents = document.querySelectorAll(".tab-content");
 
-// Hiển thị Bookmark mặc định
-document.getElementById("tabmanager-container").classList.remove("hidden");
+/* ===============================
+   Restore last active tab
+================================ */
+async function restoreLastTab() {
+    const settings = await loadSettings();
+    const activeTab = settings.activePopupTab || "tabmanager";
 
-// Mặc định hiển thị bookmark
-tabs.forEach(tab => {
-    if (tab.dataset.tab === "tabmanager") tab.classList.add("active");
-});
+    // show content
+    contents.forEach(c => c.classList.add("hidden"));
+    document.getElementById(activeTab + "-container")?.classList.remove("hidden");
 
-// Lazy load module ngay khi mở popup
-if (!window.tabManagerLoaded) {
-    import('./features/tab/tab.js').then(module => {
-        module.initTabManager();
-        window.tabManagerLoaded = true;
+    // highlight tab
+    tabs.forEach(t => t.classList.remove("active"));
+    tabs.forEach(tab => {
+        if (tab.dataset.tab === activeTab) {
+            tab.classList.add("active");
+        }
     });
+
+    // lazy load đúng module
+    await loadModule(activeTab);
 }
 
-// Event click cho tab
+/* ===============================
+   Lazy load module
+================================ */
+async function loadModule(target) {
+    if (target === "bookmark" && !window.bookmarkLoaded) {
+        const module = await import('./features/bookmark/bookmark.js');
+        module.initBookmark();
+        window.bookmarkLoaded = true;
+    }
+
+    if (target === "tabmanager" && !window.tabManagerLoaded) {
+        const module = await import('./features/tab/tab.js');
+        module.initTabManager();
+        window.tabManagerLoaded = true;
+    }
+
+    if (target === "water" && !window.waterLoaded) {
+        const module = await import('./features/water-reminder/water-reminder.js');
+        module.initWaterReminder();
+        window.waterLoaded = true;
+    }
+
+    if (target === "eye-relax" && !window.eyeLoaded) {
+        const module = await import('./features/eye-relax/eye-settings.js');
+        module.initEyeRelax();
+        window.eyeLoaded = true;
+    }
+}
+
+/* ===============================
+   Tab click handler
+================================ */
 tabs.forEach(tab => {
     tab.addEventListener("click", async () => {
         const target = tab.dataset.tab;
 
-        // hide all contents
+        // hide/show
         contents.forEach(c => c.classList.add("hidden"));
         document.getElementById(target + "-container").classList.remove("hidden");
 
-        // highlight tab
+        // active style
         tabs.forEach(t => t.classList.remove("active"));
         tab.classList.add("active");
 
-        // load module lazily
-        if (target === "bookmark" && !window.bookmarkLoaded) {
-            const module = await import('./features/bookmark/bookmark.js');
-            module.initBookmark();
-            window.bookmarkLoaded = true;
-        }
+        // save state
+        saveSettings({ activePopupTab: target });
 
-        if (target === "tabmanager" && !window.tabManagerLoaded) {
-            const module = await import('./features/tab/tab.js');
-            module.initTabManager();
-            window.tabManagerLoaded = true;
-        }
-
-        // load module lazily
-        if (target === "water" && !window.waterLoaded) {
-            const module = await import('./features/water-reminder/water-reminder.js');
-            module.initWaterReminder();
-            window.waterLoaded = true;
-        }
-
-        // load module lazily
-        if (target === "eye-relax" && !window.eyeLoaded) {
-            const module = await import('./features/eye-relax/eye-settings.js');
-            module.initEyeRelax();
-            window.eyeLoaded = true;
-        }
+        // load module
+        await loadModule(target);
     });
 });
 
+/* ===============================
+   Note button
+================================ */
 document.querySelector('#openNoteBtn').addEventListener('click', async () => {
     if (!window.noteLoaded) {
         const module = await import('./features/note/note.js');
@@ -67,7 +89,15 @@ document.querySelector('#openNoteBtn').addEventListener('click', async () => {
     }
 });
 
+/* ===============================
+   Recorder
+================================ */
 document.querySelector("#openRecorderBtn").addEventListener("click", async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     chrome.tabs.sendMessage(tab.id, { action: "open-record-widget" });
 });
+
+/* ===============================
+   INIT popup
+================================ */
+restoreLastTab();
