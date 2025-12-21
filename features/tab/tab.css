@@ -107,3 +107,47 @@
 .color-list [data-color="pink"] { background: #ff80ab; }
 .color-list [data-color="purple"] { background: #ab47bc; }
 .color-list [data-color="cyan"] { background: #00acc1; }
+
+
+.actions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.actions .btn {
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    padding: 4px 6px;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+
+/* LIST MODE WEBSITE ITEM */
+/* FULL WIDTH MODE */
+#tabmanager-container .group-box.list-mode {
+    width: 100% !important;
+}
+
+
+/* Add bottom space for last item */
+.tab-list .group-box.list-mode:last-child {
+    margin-bottom: 30px;
+}
+
+.tab-list .list-icon {
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0;
+}
+
+.tab-list .list-url-text {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

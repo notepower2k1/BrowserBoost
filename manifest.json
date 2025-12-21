@@ -13,7 +13,8 @@
         "sidePanel",
         "alarms",
         "notifications",
-        "downloads"
+        "downloads",
+        "bookmarks"
     ],
     "content_scripts": [
         {

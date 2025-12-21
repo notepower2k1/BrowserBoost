@@ -6,9 +6,8 @@
 Đây là một Chrome Extension hỗ trợ người dùng trên trình duyệt. Extension này bao gồm chức năng chính:
 
 1. **BookMark Custom**  
-   - Cho phép lưu và sắp xếp bookmark theo ý muốn.  
-   - Hỗ trợ tìm kiếm nhanh, thêm ghi chú và quản lý các trang web yêu thích.  
-   - Có hết tất cả các chức năng của bookmark.
+   - Đồng bộ với Bookmark của web
+   - Cho phép điều chỉnh với UI đơn giản hơn
 
 2. **Tab Group Manager**  
    - Quản lý các nhóm tab đang mở.  

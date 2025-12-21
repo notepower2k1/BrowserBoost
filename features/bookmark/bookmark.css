@@ -1,151 +1,103 @@
-.website-list.grid-mode {
+#folder-bar {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px;
-
-    background: #fff;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    margin-bottom: 12px;
 }
 
-.website-item.grid-mode {
-    width: 36px;
-    height: 36px;
-    padding: 4px;
-    background: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+#folder-count {
+    font-size: 13px;
+    color: #5b6b76;
+}
+
+#bookmark-folder-select {
+    min-width: 220px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#folder-select {
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+#bookmark-list {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    margin: 0 12px 12px;
+}
+
+#bookmark-list.grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#bookmark-list.grid .website-item {
+    width: 40px;
+    height: 40px;
+    padding: 6px;
+    background: #f9fafb;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: background .2s, box-shadow .2s;
 }
 
-
-/* LIST MODE WEBSITE ITEM */
-/* FULL WIDTH MODE */
-.group-box.list-mode {
-    width: 100% !important;
+#bookmark-list.grid .website-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
-.website-list.list-mode {
+#bookmark-list.list {
     display: flex;
-    flex-direction: column;   /* QUAN TRỌNG */
-    gap: 4px;                 /* cách từng dòng */
-    padding: 8px 4px;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.website-item.list-mode {
-    height: auto;                       /* không khóa chiều cao */
+#bookmark-list.list .website-item {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 8px;
-    border-radius: 6px;
+    padding: 8px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
-/* Add bottom space for last item */
-.group-box.list-mode:last-child {
-    margin-bottom: 30px;
+#bookmark-list.list img {
+    width: 20px;
+    height: 20px;
 }
 
-.list-icon {
-    width: 20px !important;
-    height: 20px !important;
-    flex-shrink: 0;
-}
-
-.list-url-text {
+.website-title {
     font-size: 14px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-
 .website-item:hover {
     background: #f0f0f0;
-    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
 }
 
-.website-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-
-.website-item.highlight {
-    outline: 1px solid #ff9800;
-    background: rgba(255, 152, 0, 0.15);
-    transition: background 0.2s;
-}
-
-.website-list.delete-mode .website-item {
-    opacity: 0.5;
-}
-
-.website-list.delete-mode .website-item.selected {
-    border: 1px solid red;
-    opacity: 1;
-}
-
-
-.actions {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.actions .btn {
-    background: #fff;
-    border: 1px solid #bbb;
-    border-radius: 5px;
-    padding: 4px 6px;
-    cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s;
-}
-
-.actions .btn:hover {
-    background: #f1f3f6;
-    box-shadow: 0 0 4px rgba(0,0,0,0.2);
-}
-
-.delete-mode .website-item {
-    opacity: .3;
-}
-
-.btn.delete-mode{
-    background: red;
-    color: white;
-}
-
-.website-item.selected {
-    opacity: 1 !important;
-}
-
-.btn {
-    border: none;
-    cursor: pointer;
-}
-
-.toggle-btn {
-    border: none;
-    background: transparent;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 6px;
-}
-
-
-#group-action-modal .modal-buttons, #website-action-modal .modal-buttons {
+#folder-action-modal .modal-buttons,
+#website-action-modal .modal-buttons {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -154,3 +106,9 @@
 #website-action-modal.hidden {
     display: none;
 }
+
+.website-item.selected {
+    outline: 2px solid red;
+    background: rgba(255, 0, 0, 0.15);
+}
+
