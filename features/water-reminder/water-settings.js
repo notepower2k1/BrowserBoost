@@ -1,7 +1,13 @@
-import * as utils from './water-utils.js';
+async function getSettings() {
+    return (await chrome.storage.local.get("water_settings_v1"))["water_settings_v1"] || {};
+}
+
+async function saveSettings(data) {
+    await chrome.storage.local.set({ water_settings_v1: data });
+}
 
 async function initWaterSettings() {
-    const settings = await utils.getSettings();
+    const settings = await getSettings();
 
     // Personal info
     document.getElementById('weight').value = settings.weight || '';
@@ -13,13 +19,14 @@ async function initWaterSettings() {
     document.querySelector(`input[name="reminderMode"][value="${mode}"]`).checked = true;
 
     document.getElementById('interval-minutes').value = settings.intervalMinutes || 60;
-    document.getElementById('sound').checked = settings.sound || false;
 
     (settings.scheduleTimes || []).forEach(t => addScheduleItem(t));
 
     document.getElementById('add-time').addEventListener('click', () => {
         addScheduleItem("08:00");
     });
+
+    document.getElementById('reminder-toggle').checked = settings.enabled ?? false;
 
     // Calculate recommended water
     document.getElementById('calcRec').addEventListener('click', () => {
@@ -32,7 +39,7 @@ async function initWaterSettings() {
     // Save daily goal
     document.getElementById('saveGoal').addEventListener('click', async () => {
         const goal = Number(document.getElementById('dailyGoal').value) || 2000;
-        await utils.saveSettings({ goal });
+        await saveSettings({ goal });
         alert('Saved daily goal: ' + goal + ' ml');
     });
 
@@ -40,29 +47,23 @@ async function initWaterSettings() {
     document.getElementById('save-settings').addEventListener('click', async () => {
         const reminderMode = document.querySelector('input[name="reminderMode"]:checked').value;
         const intervalMinutes = Number(document.getElementById('interval-minutes').value) || 60;
-        const sound = document.getElementById('sound').checked;
         const scheduleTimes = [...document.querySelectorAll(".time-item-input")].map(inp => inp.value).filter(Boolean);
+        const enabled = document.getElementById('reminder-toggle').checked;
 
-        await utils.saveSettings({
+        await saveSettings({
             reminderMode,
             intervalMinutes,
-            sound,
-            scheduleTimes
+            scheduleTimes,
+            enabled
         });
 
         chrome.runtime.sendMessage({ action: "rebuild-water-reminder" });
         alert('Reminder settings saved!');
     });
 
-    document.getElementById('reminder-toggle').checked = settings.enabled ?? false;
     document.getElementById('reminder-toggle').addEventListener('change', async (e) => {
-        await utils.saveSettings({ enabled: e.target.checked });
+        await saveSettings({ enabled: e.target.checked });
         chrome.runtime.sendMessage({ action: "rebuild-water-reminder" });
-    });
-
-    // Back button (nếu muốn quay về popup)
-    document.getElementById('backToMain').addEventListener('click', () => {
-        window.close(); // hoặc mở popup mới
     });
 }
 

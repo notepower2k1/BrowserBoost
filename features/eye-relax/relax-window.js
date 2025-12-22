@@ -1,6 +1,4 @@
 // ---------------------- INIT ----------------------
-import { getLocalStorage } from "../../helper.js"; // nếu bạn dùng helper
-
 const text = document.getElementById("timeText");
 const doneBtn = document.getElementById("done");
 const ringWrapper = document.querySelector(".ring-wrapper");

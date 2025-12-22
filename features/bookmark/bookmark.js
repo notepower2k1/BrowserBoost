@@ -12,8 +12,6 @@ async function loadFolderOptions(select) {
 
         // reset select, giữ All Bookmarks
         select.innerHTML = `<option value="all">All Bookmarks</option>`;
-        const { lastBookmarkFolder } = await chrome.storage.local.get('lastBookmarkFolder');
-        select.value = lastBookmarkFolder || 'all';
         function walk(node) {
             if (!node.children) return;
 
@@ -29,6 +27,9 @@ async function loadFolderOptions(select) {
         }
 
         walk(root);
+
+        const { lastBookmarkFolder } = await chrome.storage.local.get('lastBookmarkFolder');
+        select.value = lastBookmarkFolder || 'all';
     });
 }
 
@@ -185,7 +186,7 @@ function setupWebItemContextMenu() {
     const btnClose = modal.querySelector('#close-website-modal');
 
     document.querySelectorAll('.website-item').forEach(item => {
-        item.oncontextmenu = e => {
+        item.onclick = e => {
             e.preventDefault();
             e.stopPropagation();
             currentWebsiteUrl = item.dataset.url;
@@ -409,6 +410,8 @@ export async function initBookmark() {
     const setting = await loadSettings("setting");
     viewMode = setting?.bookMarkViewMode || "grid";
 
+    const { lastBookmarkFolder } = await chrome.storage.local.get('lastBookmarkFolder');
+
     const folderSelect = document.getElementById("bookmark-folder-select");
     const listContainer = document.getElementById("bookmark-list");
     const toggleBtn = document.getElementById("toggle-view");
@@ -434,6 +437,13 @@ export async function initBookmark() {
         document.getElementById('add-folder-modal').classList.remove('hidden');
     };
 
+    document.getElementById('more-action').onclick = () => {
+        if (folderSelect.value === 'all') return;
+        document
+            .getElementById('folder-action-modal')
+            .classList.remove('hidden');
+    };
+
     folderSelect.onchange = () => {
         const value = folderSelect.value;
         chrome.storage.local.set({ lastBookmarkFolder: value });
@@ -447,7 +457,11 @@ export async function initBookmark() {
 
     // init
     loadFolderOptions(folderSelect);
-    loadAllBookmarks(listContainer);
+    if (!lastBookmarkFolder) {
+        loadAllBookmarks(listContainer);
+    } else {
+        loadFolder(lastBookmarkFolder, listContainer);
+    }
     setupAddFolderModal(folderSelect);
     setupRenameFolderModal(folderSelect);
     setupBookmarkListContextMenu(folderSelect, listContainer);

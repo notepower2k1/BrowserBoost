@@ -7,6 +7,12 @@
     margin-bottom: 12px;
 }
 
+#folder-more {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
 #folder-count {
     font-size: 13px;
     color: #5b6b76;
@@ -33,7 +39,7 @@
     border-radius: 12px;
     padding: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    margin: 0 12px 12px;
+    margin: 0 12px 60px;
 }
 
 #bookmark-list.grid {
@@ -111,4 +117,3 @@
     outline: 2px solid red;
     background: rgba(255, 0, 0, 0.15);
 }
-
