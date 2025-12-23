@@ -65,11 +65,11 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     const settings = await getEyeRelaxSettings();
     if (!settings.enabled) return;
 
-    const { eyeRelaxActive } = await chrome.storage.local.get("eyeRelaxActive");
-    if (eyeRelaxActive) return;
+    // const { eyeRelaxActive } = await chrome.storage.local.get("eyeRelaxActive");
+    // if (eyeRelaxActive) return;
 
-    // Mark active
-    await chrome.storage.local.set({ eyeRelaxActive: true });
+    // // Mark active
+    // await chrome.storage.local.set({ eyeRelaxActive: true });
 
     // Show notification
     chrome.notifications.create({
