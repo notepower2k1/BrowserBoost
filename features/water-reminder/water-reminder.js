@@ -82,6 +82,8 @@ async function refreshUI() {
         todayStatusEl.textContent = (intake >= goal) ? "Completed" : "In Progress";
         todayStatusEl.className = (intake >= goal) ? "value completed" : "value in-progress";
     }
+
+    document.getElementById('reminder-toggle').checked = settings.reminderEnabled ?? false;
 }
 
 function setupEventHandlers() {
@@ -109,6 +111,11 @@ function setupEventHandlers() {
         if (!confirm("Reset today's intake to 0?")) return;
         await utils.resetToday();
         await refreshUI();
+    });
+
+    document.getElementById('reminder-toggle').addEventListener('change', async (e) => {
+        await utils.saveSettings({ reminderEnabled: e.target.checked });
+        chrome.runtime.sendMessage({ action: "rebuild-water-reminder" });
     });
 }
 

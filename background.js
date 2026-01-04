@@ -65,11 +65,6 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     const settings = await getEyeRelaxSettings();
     if (!settings.enabled) return;
 
-    // const { eyeRelaxActive } = await chrome.storage.local.get("eyeRelaxActive");
-    // if (eyeRelaxActive) return;
-
-    // // Mark active
-    // await chrome.storage.local.set({ eyeRelaxActive: true });
 
     // Show notification
     chrome.notifications.create({
@@ -80,12 +75,14 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     });
 
     // Open relax popup
-    chrome.windows.create({
-        url: chrome.runtime.getURL("features/eye-relax/relax-window.html"),
-        type: "popup",
-        focused: true,
-        width: 360,
-        height: 360
+    chrome.notifications.onClicked.addListener((id) => {
+        chrome.windows.create({
+            url: chrome.runtime.getURL("features/eye-relax/relax-window.html"),
+            type: "popup",
+            focused: true,
+            width: 360,
+            height: 360
+        });
     });
 });
 
@@ -103,21 +100,21 @@ chrome.runtime.onMessage.addListener(async (msg) => {
     }
 
     if (msg.action === "eye-dismiss") {
-        await chrome.storage.local.set({ eyeRelaxActive: false });
+        const interval = settings.interval || 20;
 
-        const runtime = (await chrome.storage.local.get("eyeRelaxRuntime")).eyeRelaxRuntime;
-        if (runtime?.snoozed) {
-            // reset interval alarm
-            await scheduleEyeRelaxAlarm(runtime.baseInterval);
-            await chrome.storage.local.set({ eyeRelaxRuntime: { snoozed: false } });
-        } else {
-            // schedule next normal interval
-            await scheduleEyeRelaxAlarm(settings.interval);
-        }
+        // Always reschedule
+        await scheduleEyeRelaxAlarm(interval);
+
+        await chrome.storage.local.set({
+            eyeRelaxActive: false,
+            eyeRelaxRuntime: {
+                snoozed: false,
+                baseInterval: interval
+            }
+        });
     }
 
     if (msg.action === "update-eye-relax") {
-        const settings = await getEyeRelaxSettings();
         if (!settings.enabled) return;
 
         // Reset active
@@ -263,8 +260,8 @@ function notify(settings) {
    Settings loader
 ================================ */
 async function getWaterSettings() {
-    const res = await chrome.storage.local.get("water_settings_v1");
-    return res.water_settings_v1 || {};
+    const r = await chrome.storage.local.get("water_settings_v1");
+    return r["water_settings_v1"] || {};
 }
 
 async function handleAddBookmark(tab) {

@@ -54,6 +54,7 @@ export async function initEyeRelax() {
         const newSetting = {
             enabled: document.getElementById("er-enabled").checked,
             interval: Number(document.getElementById("er-interval").value) || 20,
+            relaxDuration: Number(document.getElementById("er-duration").value) || 20
         };
 
         await setLocalStorage("eyeRelax", newSetting);

@@ -1,10 +1,4 @@
-async function getSettings() {
-    return (await chrome.storage.local.get("water_settings_v1"))["water_settings_v1"] || {};
-}
-
-async function saveSettings(data) {
-    await chrome.storage.local.set({ water_settings_v1: data });
-}
+import { getSettings, saveSettings } from './water-utils.js';
 
 async function initWaterSettings() {
     const settings = await getSettings();
@@ -26,8 +20,6 @@ async function initWaterSettings() {
         addScheduleItem("08:00");
     });
 
-    document.getElementById('reminder-toggle').checked = settings.enabled ?? false;
-
     // Calculate recommended water
     document.getElementById('calcRec').addEventListener('click', () => {
         const w = Number(document.getElementById('weight').value) || 0;
@@ -45,25 +37,22 @@ async function initWaterSettings() {
 
     // Save reminder settings
     document.getElementById('save-settings').addEventListener('click', async () => {
+        const weight = document.getElementById('weight').value ?? 0;
+        const activity = document.getElementById('activity').value ?? '1.0';
         const reminderMode = document.querySelector('input[name="reminderMode"]:checked').value;
         const intervalMinutes = Number(document.getElementById('interval-minutes').value) || 60;
         const scheduleTimes = [...document.querySelectorAll(".time-item-input")].map(inp => inp.value).filter(Boolean);
-        const enabled = document.getElementById('reminder-toggle').checked;
 
         await saveSettings({
+            weight,
+            activity,
             reminderMode,
             intervalMinutes,
             scheduleTimes,
-            enabled
         });
 
         chrome.runtime.sendMessage({ action: "rebuild-water-reminder" });
         alert('Reminder settings saved!');
-    });
-
-    document.getElementById('reminder-toggle').addEventListener('change', async (e) => {
-        await saveSettings({ enabled: e.target.checked });
-        chrome.runtime.sendMessage({ action: "rebuild-water-reminder" });
     });
 }
 
@@ -79,4 +68,5 @@ function addScheduleItem(initialTime = "08:00") {
     div.querySelector('.remove-time').addEventListener('click', () => div.remove());
 }
 
-initWaterSettings();
+document.addEventListener("DOMContentLoaded", initWaterSettings);
+

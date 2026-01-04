@@ -17,7 +17,7 @@ let remaining = TOTAL_SECONDS;
 // ------------------- LOAD SETTINGS -------------------
 async function init() {
     const stored = await chrome.storage.local.get("eyeRelax");
-    const relaxDuration = (stored?.relaxDuration) || 20;
+    const relaxDuration = stored.eyeRelax?.relaxDuration || 20;
     TOTAL_SECONDS = relaxDuration;
     remaining = TOTAL_SECONDS;
 
@@ -76,5 +76,8 @@ doneBtn.onclick = () => {
     window.close();
 };
 
+window.addEventListener("beforeunload", () => {
+    chrome.runtime.sendMessage({ action: "eye-dismiss", force: true });
+});
 // ------------------- START -------------------
 init();
