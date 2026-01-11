@@ -5,14 +5,14 @@
 ## Giới thiệu
 Đây là một Chrome Extension hỗ trợ người dùng trên trình duyệt. Extension này bao gồm chức năng chính:
 
-1. **BookMark Custom**  
-   - Đồng bộ với Bookmark của web
-   - Cho phép điều chỉnh với UI đơn giản hơn
-
-2. **Tab Group Manager**  
+1. **Tab Group Manager**  
    - Quản lý các nhóm tab đang mở.  
    - Dễ dàng tạo, đổi tên, xóa hoặc di chuyển tab giữa các nhóm.  
    - Giúp duy trì không gian làm việc gọn gàng và khoa học.  
+
+2. **BookMark Custom**  
+   - Đồng bộ với Bookmark của web
+   - Cho phép điều chỉnh với UI đơn giản hơn
 
 3. **Sidebar Note**  
    - Cho phép note thông tin ngay trên trình duyệt
