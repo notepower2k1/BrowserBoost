@@ -1,3 +1,10 @@
+<div id="window-bar">
+    <select id="window-selector">
+        <option value="all">All windows</option>
+    </select>
+    <span id="tab-count"></span>
+</div>
+
 <div class="groups-container"></div>
 
 <div id="edit-group-modal" class="modal hidden">
@@ -34,6 +41,9 @@
         </button>
         <button id="delete-all-groups" class="btn toolbar-btn" tooltip="Delete all groups">
             <i class="fa-solid fa-dumpster"></i>
+        </button>
+        <button id="remove-duplicate-tabs" class="btn toolbar-btn" tooltip="Remove duplicate tabs">
+            <i class="fa-solid fa-clone"></i>
         </button>
     </div>
 </div>

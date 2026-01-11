@@ -5,6 +5,8 @@ let deleteMode = {};
 let selectedForDelete = {};
 let currentEditGroupId = null;
 let currentSelectedColor = null;
+let selectedWindowId = 'all';
+let activeDeleteGroupId = null;
 
 // Tạo HTML cho một group (header + tab-list placeholder + actions)
 function createGroupBox({ id, title, color = "#ccc", count = 0, viewMode = "grid" }) {
@@ -105,6 +107,12 @@ function renderTabList(tabs, box, mode = "grid") {
         item.addEventListener("click", (e) => {
             const groupId = box.dataset.id;
 
+            // Nếu đang delete mode group khác → chặn
+            if (isAnyDeleteModeActive() && activeDeleteGroupId !== groupId) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
             // Nếu đang ở delete mode → toggle chọn để xóa
             if (deleteMode[groupId]) {
                 e.stopPropagation();
@@ -132,7 +140,10 @@ async function renderTabGroup() {
     const container = document.querySelector("#tabmanager-container .groups-container");
     container.innerHTML = "";
 
-    const tabs = await chrome.tabs.query({});
+    const tabs = selectedWindowId === "all"
+        ? await chrome.tabs.query({})
+        : await chrome.tabs.query({ windowId: Number(selectedWindowId) });
+
     const groupsMap = {};
     const ungrouped = [];
 
@@ -144,6 +155,8 @@ async function renderTabGroup() {
             ungrouped.push(t);
         }
     });
+
+    updateTabCount(tabs.length);
 
     // render groups có id
     for (const gid of Object.keys(groupsMap)) {
@@ -185,11 +198,7 @@ async function renderTabGroup() {
 
     // GRID MODE → AUTO SIZE
     if (viewMode === "grid") {
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                autoResizeGroupsAll();
-            });
-        });
+        autoResizeGroupsAll();
     } else {
         // LIST MODE → FULL AUTO HEIGHT
         document.querySelectorAll(".group-box").forEach(b => {
@@ -279,7 +288,8 @@ async function addNewTabToGroup(groupId, url = "chrome://newtab/") {
 
     // 1. Tạo tab mới
     const newTab = await chrome.tabs.create({
-        url,
+        windowId: getActiveWindowId(),
+        url: url,
         active: false
     });
 
@@ -311,7 +321,7 @@ function attachGroupEvents() {
                 if (isNaN(groupId)) return;
 
                 // ungroup ALL tabs
-                chrome.tabs.query({ groupId }, async (tabs) => {
+                chrome.tabs.query({ groupId, windowId: getActiveWindowId() }, async (tabs) => {
                     if (tabs.length > 0) {
                         await chrome.tabs.ungroup(tabs.map(t => t.id));
                     }
@@ -345,41 +355,35 @@ function attachGroupEvents() {
                 const box = btn.closest(".group-box");
                 const groupId = box.dataset.id;
 
-                // Nếu chưa bật delete mode → bật
+                // ===== BẬT DELETE MODE =====
                 if (!deleteMode[groupId]) {
-                    deleteMode[groupId] = true;
-                    selectedForDelete[groupId] = new Set();
-                    box.querySelector(".tab-list").classList.add("delete-mode");
-                    btn.classList.add("delete-mode");
+                    enterDeleteMode(groupId, box, btn);
                     return;
                 }
 
-                // Nếu bật delete mode nhưng chưa chọn gì → tắt mode
+                // ===== ĐANG DELETE MODE =====
+                // Chưa chọn tab nào → thoát mode
                 if (selectedForDelete[groupId].size === 0) {
-                    deleteMode[groupId] = false;
-                    selectedForDelete[groupId] = new Set();
-                    box.querySelector(".tab-list").classList.remove("delete-mode");
-                    btn.classList.remove("delete-mode");
-                    box.querySelectorAll(".tab-item.selected")
-                        .forEach(it => it.classList.remove("selected"));
+                    exitDeleteMode(groupId);
                     return;
                 }
 
-                // Xóa tabs được chọn
-                const tabIdsToDelete = Array.from(selectedForDelete[groupId]);
+                // ===== XÓA TAB =====
+                const windowId = getActiveWindowId();
+                if (!windowId) return;
 
-                chrome.tabs.remove(tabIdsToDelete);
+                const tabsInWindow = await chrome.tabs.query({ windowId, });
+                const validIds = new Set(tabsInWindow.map(t => t.id));
 
-                // Reset
-                deleteMode[groupId] = false;
-                selectedForDelete[groupId] = new Set();
-                box.querySelector(".tab-list").classList.remove("delete-mode");
-                btn.classList.remove("delete-mode");
+                const tabIdsToDelete = [...selectedForDelete[groupId]]
+                    .filter(id => validIds.has(id));
 
-                // 2. Chờ tab được Chrome gán đầy đủ thông tin (quan trọng)
-                await new Promise(resolve => setTimeout(resolve, 120));
+                await chrome.tabs.remove(tabIdsToDelete);
 
-                await renderTabGroup();
+                exitDeleteMode(groupId);
+
+                await new Promise(r => setTimeout(r, 120));
+                renderTabGroup();
             };
         });
 
@@ -394,7 +398,7 @@ function attachGroupEvents() {
 
                 if (groupId === null) {
                     // ungrouped → chỉ tạo tab mới
-                    await chrome.tabs.create({ url: "chrome://newtab/", active: false });
+                    await chrome.tabs.create({ windowId: getActiveWindowId(), url: "chrome://newtab/", active: false });
                 } else {
                     // tạo tab mới rồi đưa vào group
                     await addNewTabToGroup(groupId);
@@ -413,6 +417,10 @@ function enableTabDrag() {
         item.setAttribute("draggable", true);
 
         item.addEventListener("dragstart", e => {
+            if (isAnyDeleteModeActive()) {
+                e.preventDefault();
+                return;
+            }
             e.dataTransfer.setData("tab-id", item.dataset.tabId);
             e.dataTransfer.setData("from-group", item.closest(".group-box").dataset.id);
             item.classList.add("dragging");
@@ -437,12 +445,24 @@ function enableTabDrag() {
             const toGroupId = list.closest(".group-box").dataset.id;
 
             if (!tabId || fromGroupId === toGroupId) return;
+            const tab = await chrome.tabs.get(tabId);
 
-            // === THAY GROUP TRÊN CHROME ===
-            if (toGroupId === "ungrouped") {
-                await chrome.tabs.ungroup(tabId);
+            if (toGroupId !== "ungrouped") {
+                const group = await chrome.tabGroups.get(Number(toGroupId));
+
+                if (tab.windowId !== group.windowId) {
+                    await chrome.tabs.move(tabId, {
+                        windowId: group.windowId,
+                        index: -1
+                    });
+                }
+
+                await chrome.tabs.group({
+                    groupId: Number(toGroupId),
+                    tabIds: tabId
+                });
             } else {
-                await chrome.tabs.group({ groupId: Number(toGroupId), tabIds: tabId });
+                await chrome.tabs.ungroup(tabId);
             }
 
             // === RENDER LẠI GIAO DIỆN ===
@@ -478,6 +498,160 @@ function handleSearchWebInput() {
     highlightTabItems(filterText);
 }
 
+async function loadWindowSelector() {
+    const select = document.querySelector("#window-selector");
+    const addBtn = document.querySelector(
+        "#tabmanager-container #toolbar #open-add-group-modal"
+    );
+
+    if (!select || !addBtn) return;
+
+    const windows = await chrome.windows.getAll();
+
+    select.innerHTML = `<option value="all">All windows</option>`;
+
+    windows.forEach((win, index) => {
+        const opt = document.createElement("option");
+        opt.value = win.id;
+        opt.textContent = `Active window ${index + 1}`;
+        select.appendChild(opt);
+    });
+
+    select.value = selectedWindowId ?? "all";
+    addBtn.style.display = select.value === "all" ? "flex" : "none";
+}
+
+function updateTabCount(count) {
+    const el = document.getElementById('tab-count');
+    if (el) el.textContent = `${count} tab${count > 1 ? 's' : ''}`;
+}
+
+function isAnyDeleteModeActive() {
+    return activeDeleteGroupId !== null;
+}
+
+function toggleDeleteButtons(activeGroupId) {
+    document
+        .querySelectorAll("#tabmanager-container .group-box")
+        .forEach(box => {
+            const groupId = box.dataset.id;
+            const deleteBtn = box.querySelector(".actions .delete");
+
+            if (!deleteBtn) return;
+
+            if (activeGroupId && groupId !== String(activeGroupId)) {
+                deleteBtn.disabled = true;
+                deleteBtn.classList.add("disabled");
+            } else {
+                deleteBtn.disabled = false;
+                deleteBtn.classList.remove("disabled");
+            }
+        });
+}
+
+function enterDeleteMode(groupId, box, btn) {
+    // Nếu đang có group khác delete mode → thoát
+    if (activeDeleteGroupId && activeDeleteGroupId !== groupId) {
+        exitDeleteMode(activeDeleteGroupId);
+    }
+
+    activeDeleteGroupId = groupId;
+    deleteMode[groupId] = true;
+    selectedForDelete[groupId] = new Set();
+
+    box.querySelector(".tab-list").classList.add("delete-mode");
+    btn.classList.add("delete-mode");
+
+    toggleDeleteButtons(groupId);
+    toggleWindowSelector(false);
+    disableOtherActions(true);
+}
+
+function exitDeleteMode(groupId) {
+    const box = document.querySelector(`.group-box[data-id="${groupId}"]`);
+    if (!box) return;
+
+    deleteMode[groupId] = false;
+    selectedForDelete[groupId] = new Set();
+
+    box.querySelector(".tab-list").classList.remove("delete-mode");
+    box.querySelector(".actions .delete")?.classList.remove("delete-mode");
+
+    box.querySelectorAll(".tab-item.selected")
+        .forEach(it => it.classList.remove("selected"));
+
+    activeDeleteGroupId = null;
+
+    toggleDeleteButtons(null);
+    toggleWindowSelector(true);
+    disableOtherActions(false);
+}
+
+function toggleWindowSelector(show) {
+    const selector = document.querySelector("#window-selector");
+    if (!selector) return;
+
+    selector.disabled = show ? false : true;
+}
+
+function disableOtherActions(disabled) {
+    document.querySelectorAll(
+        "#toolbar button, .actions .add"
+    ).forEach(el => {
+        el.disabled = disabled;
+    });
+}
+
+function getActiveWindowId() {
+    return selectedWindowId === "all"
+        ? null
+        : Number(selectedWindowId);
+}
+
+function normalizeUrl(url) {
+    try {
+        const u = new URL(url);
+        u.hash = ""; // bỏ #section
+        return u.toString();
+    } catch {
+        return url;
+    }
+}
+
+async function removeDuplicateTabs() {
+    const windowId = selectedWindowId === "all"
+        ? null
+        : Number(selectedWindowId);
+
+    if (activeDeleteGroupId) return; // không cho khi delete mode
+
+    const tabs = windowId
+        ? await chrome.tabs.query({ windowId })
+        : await chrome.tabs.query({});
+
+    const map = new Map(); // url -> tabId giữ lại
+    const duplicateIds = [];
+
+    tabs.forEach(tab => {
+        if (!tab.url || tab.url.startsWith("chrome://")) return;
+
+        const key = normalizeUrl(tab.url);
+
+        if (!map.has(key)) {
+            map.set(key, tab.id);
+        } else {
+            duplicateIds.push(tab.id);
+        }
+    });
+
+    if (duplicateIds.length === 0) {
+        alert("No duplicate tabs found");
+        return;
+    }
+
+    await chrome.tabs.remove(duplicateIds);
+    renderTabGroup();
+}
 
 // Khởi tạo
 export async function initTabManager() {
@@ -498,8 +672,22 @@ export async function initTabManager() {
         viewMode = setting.tabViewMode || "grid";
     }
 
+    await loadWindowSelector();
     await renderTabGroup();
 
+    document.querySelector("#window-selector").addEventListener("change", async (e) => {
+        if (activeDeleteGroupId) {
+            exitDeleteMode(activeDeleteGroupId);
+        }
+
+        selectedWindowId = e.target.value;
+        document.querySelector("#tabmanager-container #toolbar #open-add-group-modal").style.display = e.target.value === "all"
+            ? "flex"
+            : "none";
+
+        await renderTabGroup();
+        handleSearchWebInput();
+    });
 
     document.querySelectorAll(".color-list span").forEach(el => {
         el.addEventListener("click", () => {
@@ -548,7 +736,15 @@ export async function initTabManager() {
 
     document.querySelector("#tabmanager-container #toolbar #delete-all-groups").onclick = async () => {
         // Lấy tất cả tab đang có group
-        const tabs = await chrome.tabs.query({});
+        const windowId = getActiveWindowId();
+        let tabs = null;
+
+        if (windowId === null) {
+            tabs = await chrome.tabs.query({});
+        } else {
+            tabs = await chrome.tabs.query({ windowId: windowId });
+        }
+
         const groupedTabs = tabs.filter(t => t.groupId !== -1);
 
         if (groupedTabs.length === 0) return;
@@ -569,5 +765,10 @@ export async function initTabManager() {
         saveSettings({
             'tabViewMode': viewMode
         });
+    };
+
+    document.querySelector("#tabmanager-container #toolbar #remove-duplicate-tabs").onclick = async () => {
+        if (!confirm("Remove duplicate tabs in current window?")) return;
+        await removeDuplicateTabs();
     };
 }

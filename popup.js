@@ -13,6 +13,7 @@ async function restoreLastTab() {
     // show content
     contents.forEach(c => c.classList.add("hidden"));
     document.getElementById(activeTab + "-container")?.classList.remove("hidden");
+    document.getElementById(activeTab + "-container")?.classList.add("active");
 
     // highlight tab
     tabs.forEach(t => t.classList.remove("active"));
@@ -62,18 +63,25 @@ tabs.forEach(tab => {
     tab.addEventListener("click", async () => {
         const target = tab.dataset.tab;
 
-        // hide/show
-        contents.forEach(c => c.classList.add("hidden"));
-        document.getElementById(target + "-container").classList.remove("hidden");
+        contents.forEach(c => {
+            c.classList.remove("active");
+            c.classList.add("hidden");
+        });
 
-        // active style
+        const targetEl = document.getElementById(target + "-container");
+        console.log(targetEl);
+        
+        targetEl.classList.remove("hidden");
+
+        void targetEl.offsetWidth;
+        targetEl.classList.add("active");
+
         tabs.forEach(t => t.classList.remove("active"));
         tab.classList.add("active");
 
-        // save state
         saveSettings({ activePopupTab: target });
 
-        // load module
+        // lazy load module
         await loadModule(target);
     });
 });

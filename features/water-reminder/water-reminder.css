@@ -1,24 +1,15 @@
-/* features/water-reminder/water-reminder.css */
-/* Aqua Style - compact for popup */
-
-.water-root {
-    width: 700px;
-    padding: 12px;
-    font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    color: #08304a;
-}
-
 .water-top {
     display: flex;
     justify-content: center;
     align-items: center;
     padding-bottom: 6px;
+    margin-top: 20px;
 }
 
 .cup-wrap {
     position: relative;
-    width: 180px;
-    height: 240px;
+    width: 200px;
+    height: 280px;
 }
 
 .cup-svg {
