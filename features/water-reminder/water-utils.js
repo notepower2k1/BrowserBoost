@@ -1,8 +1,8 @@
 // features/water-reminder/water-utils.js
 // utilities: storage keys, date helpers, intake management
 
-const SETTINGS_KEY = "water_settings_v1";
-const DATA_KEY = "water_data_v1"; // object keyed by yyyy-mm-dd
+const SETTINGS_KEY = "water_settings";
+const DATA_KEY = "water_data"; // object keyed by yyyy-mm-dd
 
 export function getTodayKey(date = new Date()) {
     const y = date.getFullYear();
@@ -15,7 +15,7 @@ export async function getSettings() {
     const r = await chrome.storage.local.get(SETTINGS_KEY);
     return r[SETTINGS_KEY] || {
         weight: null, height: null, gender: null, goal: 2000,
-        reminderEnabled: false, reminderInterval: 60, reminderSound: false
+        enabled: false, reminderInterval: 60, reminderSound: false
     };
 }
 

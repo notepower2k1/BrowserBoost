@@ -83,7 +83,7 @@ async function refreshUI() {
         todayStatusEl.className = (intake >= goal) ? "value completed" : "value in-progress";
     }
 
-    document.getElementById('reminder-toggle').checked = settings.reminderEnabled ?? false;
+    document.getElementById('reminder-toggle').checked = settings.enabled ?? false;
 }
 
 function setupEventHandlers() {
@@ -114,8 +114,8 @@ function setupEventHandlers() {
     });
 
     document.getElementById('reminder-toggle').addEventListener('change', async (e) => {
-        await utils.saveSettings({ reminderEnabled: e.target.checked });
-        chrome.runtime.sendMessage({ action: "rebuild-water-reminder" });
+        await utils.saveSettings({ enabled: e.target.checked });
+        chrome.runtime.sendMessage({ action: "update-water-reminder" });
     });
 }
 
@@ -133,7 +133,7 @@ async function checkIfCompletedAndUpdateAlarms() {
         await utils.saveAllData(all);
 
         // optional: if reminders should stop when completed, clear alarm
-        if (settings.reminderEnabled && settings.stopWhenComplete) {
+        if (settings.enabled && settings.stopWhenComplete) {
             chrome.alarms.clear("water_reminder");
         }
     }

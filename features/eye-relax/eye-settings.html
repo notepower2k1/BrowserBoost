@@ -1,5 +1,5 @@
 <!-- Reminder Mode (replace current Reminder block) -->
-<h3>Reminder Mode</h3>
+<h3>Reminder Mode 🕐</h3>
 <div class="card">
     <!-- ON/OFF -->
     <div class="reminder-row">
@@ -19,5 +19,16 @@
         <label>Relax time</label>
         <input type="number" id="er-duration" min="20" /> seconds
     </div>
+    <button id="er-save" class="btn-primary">Save setting</button>
 </div>
-    <button id="er-save" class="btn-primary">Save</button>
+
+<h3>Upcoming alarms ⏰</h3>
+
+<div class="card" id="alarmCard">
+    <ul id="alarmList"></ul>
+
+    <div class="row">
+        <button id="refreshAll" class="btn-primary">Refresh all alarms</button>
+        <button id="clearAll" class="btn-primary">Clear all alarms</button>
+    </div>
+</div>
