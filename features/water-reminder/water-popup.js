@@ -1,5 +1,6 @@
 // ---------------------- INIT ----------------------
 import * as utils from './water-utils.js';
+let actionSent = false;
 
 // when day reaches goal, we mark day completed and optionally clear alarms
 async function checkIfCompletedAndUpdateAlarms() {
@@ -19,21 +20,35 @@ async function checkIfCompletedAndUpdateAlarms() {
             chrome.alarms.clear("water_reminder");
         }
     }
+}
 
-    chrome.runtime.sendMessage({ action: "update-water-ỉntake" });
-    window.close();
+function sendOnce(msg) {
+    if (actionSent) return;
+    actionSent = true;
+    console.log('sendOnce', msg);
+    chrome.runtime.sendMessage(msg);
 }
 
 // quick add
 document.querySelectorAll('.water-popup .quick-btn').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-        const amount = Number(btn.dataset.amount || 0);
-        await utils.addIntake(amount);
-        await checkIfCompletedAndUpdateAlarms();
-    });
+    btn.addEventListener('click', async () => {
+        if (btn.disabled) return;
 
+        btn.disabled = true;
+        btn.classList.add('loading');
+
+        try {
+            const amount = Number(btn.dataset.amount || 0);
+            await utils.addIntake(amount);
+            await checkIfCompletedAndUpdateAlarms();
+
+            sendOnce({ action: "update-water-intake" });
+        } finally {
+            window.close(); // chỉ close sau khi async xong
+        }
+    });
 });
 
 window.addEventListener("beforeunload", () => {
-    chrome.runtime.sendMessage({ action: "eye-dismiss", force: true });
+    sendOnce({ action: "update-water-intake" });
 });

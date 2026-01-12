@@ -55,6 +55,9 @@ async function getWaterSettings() {
    ALARM HELPERS
 ===================================================== */
 function scheduleOneShotAlarm(name, minutes = 20) {
+    console.log('Setting new alert', name);
+    console.log('Setting new minutes', minutes);
+
     chrome.alarms.clear(name);
     chrome.alarms.create(name, {
         when: Date.now() + minutes * 60 * 1000

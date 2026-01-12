@@ -13,6 +13,7 @@ doneBtn.disabled = true;
 
 let TOTAL_SECONDS = 20; // default
 let remaining = TOTAL_SECONDS;
+let actionSent = false;
 
 // ------------------- LOAD SETTINGS -------------------
 async function init() {
@@ -60,24 +61,31 @@ function startTimer() {
     }, 1000);
 }
 
+function sendOnce(msg) {
+    if (actionSent) return;
+    actionSent = true;
+    console.log('sendOnce', msg);
+    chrome.runtime.sendMessage(msg);
+}
+
 // ------------------- BUTTONS -------------------
 document.getElementById("snooze5").onclick = () => {
-    chrome.runtime.sendMessage({ action: "eye-snooze", minutes: 5 });
+    sendOnce({ action: "eye-snooze", minutes: 5 });
     window.close();
 };
 
 document.getElementById("snooze10").onclick = () => {
-    chrome.runtime.sendMessage({ action: "eye-snooze", minutes: 10 });
+    sendOnce({ action: "eye-snooze", minutes: 10 });
     window.close();
 };
 
 doneBtn.onclick = () => {
-    chrome.runtime.sendMessage({ action: "eye-dismiss" });
+    sendOnce({ action: "eye-dismiss" });
     window.close();
 };
 
 window.addEventListener("beforeunload", () => {
-    chrome.runtime.sendMessage({ action: "eye-dismiss", force: true });
+    sendOnce({ action: "eye-dismiss", force: true });
 });
 // ------------------- START -------------------
 init();
