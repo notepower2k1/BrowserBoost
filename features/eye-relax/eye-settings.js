@@ -1,5 +1,10 @@
 import { getLocalStorage, setLocalStorage } from "../../helper.js";
 
+const ALARMS = {
+    WATER: 'water-reminder',
+    EYE: 'eye-relax'
+};
+
 const DEFAULT = {
     enabled: false,
     interval: 20, // phút
@@ -107,7 +112,7 @@ async function initAlarmCard() {
 
                     li.querySelector(".clear-btn").onclick = () => {                        
                         chrome.alarms.clear(alarm.name, async () => {                            
-                            if (alarm.name === "eye-relax") {
+                            if (alarm.name === ALARMS.EYE) {
                                 const currentSetting = await getLocalStorage("eyeRelax") || {};
                                 currentSetting.enabled = false;
                                 setLocalStorage("eyeRelax", currentSetting);
@@ -115,7 +120,7 @@ async function initAlarmCard() {
                                 if (erToggle) erToggle.checked = false;
                             }
 
-                            if (alarm.name === "water-reminder") {
+                            if (alarm.name === ALARMS.WATER) {
                                 const currentSetting = await getLocalStorage("water_settings") || {};
                                 currentSetting.enabled = false;
                                 setLocalStorage("water_settings", currentSetting);

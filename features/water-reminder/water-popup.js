@@ -1,7 +1,10 @@
 // ---------------------- INIT ----------------------
 import * as utils from './water-utils.js';
 let actionSent = false;
-
+const ALARMS = {
+    WATER: 'water-reminder',
+    EYE: 'eye-relax'
+};
 // when day reaches goal, we mark day completed and optionally clear alarms
 async function checkIfCompletedAndUpdateAlarms() {
     const settings = await utils.getSettings();
@@ -17,7 +20,7 @@ async function checkIfCompletedAndUpdateAlarms() {
 
         // optional: if reminders should stop when completed, clear alarm
         if (settings.enabled && settings.stopWhenComplete) {
-            chrome.alarms.clear("water_reminder");
+            chrome.alarms.clear(ALARMS.WATER);
         }
     }
 }
@@ -26,7 +29,9 @@ function sendOnce(msg) {
     if (actionSent) return;
     actionSent = true;
     console.log('sendOnce', msg);
-    chrome.runtime.sendMessage(msg);
+    return new Promise(resolve => {
+        chrome.runtime.sendMessage(msg, () => resolve());
+    });
 }
 
 // quick add
@@ -42,13 +47,9 @@ document.querySelectorAll('.water-popup .quick-btn').forEach(btn => {
             await utils.addIntake(amount);
             await checkIfCompletedAndUpdateAlarms();
 
-            sendOnce({ action: "update-water-intake" });
+            await sendOnce({ action: "update-water-reminder" });
         } finally {
             window.close(); // chỉ close sau khi async xong
         }
     });
-});
-
-window.addEventListener("beforeunload", () => {
-    sendOnce({ action: "update-water-intake" });
 });
