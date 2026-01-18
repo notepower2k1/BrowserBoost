@@ -134,7 +134,7 @@ async function checkIfCompletedAndUpdateAlarms() {
 
         // optional: if reminders should stop when completed, clear alarm
         if (settings.enabled && settings.stopWhenComplete) {
-            chrome.alarms.clear("water_reminder");
+            chrome.alarms.clear("water-reminder");
         }
     }
 }

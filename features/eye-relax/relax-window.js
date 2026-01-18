@@ -13,6 +13,7 @@ doneBtn.disabled = true;
 
 let TOTAL_SECONDS = 20; // default
 let remaining = TOTAL_SECONDS;
+let actionSent = false;
 
 // ------------------- LOAD SETTINGS -------------------
 async function init() {
@@ -37,13 +38,16 @@ function updateRing() {
 
 // ------------------- TIMER -------------------
 let timer;
+
 function startTimer() {
+    if (timer) clearInterval(timer);
+
     timer = setInterval(() => {
         remaining--;
 
         if (remaining <= 0) {
-            remaining = 0;
             clearInterval(timer);
+            remaining = 0;
 
             ringWrapper.classList.remove("breathing");
 
@@ -60,24 +64,29 @@ function startTimer() {
     }, 1000);
 }
 
+function sendOnce(msg) {
+    if (actionSent) return;
+    actionSent = true;
+    console.log('sendOnce', msg);
+    return new Promise(resolve => {
+        chrome.runtime.sendMessage(msg, () => resolve());
+    });
+}
+
 // ------------------- BUTTONS -------------------
-document.getElementById("snooze5").onclick = () => {
-    chrome.runtime.sendMessage({ action: "eye-snooze", minutes: 5 });
+document.getElementById("snooze5").onclick = async () => {
+    await sendOnce({ action: "eye-snooze", minutes: 5 });
     window.close();
 };
 
-document.getElementById("snooze10").onclick = () => {
-    chrome.runtime.sendMessage({ action: "eye-snooze", minutes: 10 });
+document.getElementById("snooze10").onclick = async () => {
+    await sendOnce({ action: "eye-snooze", minutes: 10 });
     window.close();
 };
 
-doneBtn.onclick = () => {
-    chrome.runtime.sendMessage({ action: "eye-dismiss" });
+doneBtn.onclick = async () => {
+    await sendOnce({ action: "update-eye-relax" });
     window.close();
 };
-
-window.addEventListener("beforeunload", () => {
-    chrome.runtime.sendMessage({ action: "eye-dismiss", force: true });
-});
 // ------------------- START -------------------
 init();

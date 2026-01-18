@@ -1,3 +1,7 @@
+const ALARMS = {
+    WATER: 'water-reminder',
+    EYE: 'eye-relax'
+};
 /* =====================================================
    CONTEXT MENU
 ===================================================== */
@@ -54,8 +58,11 @@ async function getWaterSettings() {
 /* =====================================================
    ALARM HELPERS
 ===================================================== */
-function scheduleOneShotAlarm(name, minutes = 20) {
-    chrome.alarms.clear(name);
+async function scheduleOneShotAlarm(name, minutes = 20) {
+    console.log('Setting new alert', name);
+    console.log('Setting new minutes', minutes);
+
+    await chrome.alarms.clear(name);
     chrome.alarms.create(name, {
         when: Date.now() + minutes * 60 * 1000
     });
@@ -66,7 +73,7 @@ function scheduleOneShotAlarm(name, minutes = 20) {
 ===================================================== */
 chrome.alarms.onAlarm.addListener(async (alarm) => {
     /* -------- Eye Relax -------- */
-    if (alarm.name === "eye-relax") {
+    if (alarm.name === ALARMS.EYE) {
         const settings = await getEyeRelaxSettings();
         if (!settings.enabled) return;
 
@@ -79,7 +86,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     }
 
     /* -------- Water Reminder -------- */
-    if (alarm.name === "water-reminder") {
+    if (alarm.name === ALARMS.WATER) {
         const settings = await getWaterSettings();
         if (!settings.enabled) return;
 
@@ -125,30 +132,20 @@ chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
     /* -------- Eye Relax -------- */
     if (msg.action === "eye-snooze") {
         const settings = await getEyeRelaxSettings();
-        scheduleOneShotAlarm("eye-relax", msg.minutes || settings.interval || 20);
-    }
-
-    if (msg.action === "eye-dismiss") {
-        const settings = await getEyeRelaxSettings();
-        scheduleOneShotAlarm("eye-relax", settings.interval || 20);
+        await scheduleOneShotAlarm(ALARMS.EYE, msg.minutes || settings.interval || 20);
     }
 
     if (msg.action === "update-eye-relax") {
         const settings = await getEyeRelaxSettings();
         if (!settings.enabled) return;
-        scheduleOneShotAlarm("eye-relax", settings.interval || 20);
+        await scheduleOneShotAlarm(ALARMS.EYE, settings.interval || 20);
     }
 
     /* -------- Water Reminder -------- */
-    if (msg.action === "update-water-intake") {
-        const settings = await getWaterSettings();
-        scheduleOneShotAlarm("water-reminder", settings.interval || 20);
-    }
-
     if (msg.action === "update-water-reminder") {
         const settings = await getWaterSettings();
         if (!settings.enabled) return;
-        scheduleOneShotAlarm("water-reminder", settings.interval || 20);
+        await scheduleOneShotAlarm(ALARMS.WATER, settings.interval || 20);
     }
 
     if (msg.action === "open-capture-area-page") {
