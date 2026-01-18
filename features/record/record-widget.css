@@ -139,14 +139,3 @@
         transform: translateY(0);
     }
 }
-
-.snip-toolbar button.active {
-    background: #4caf50 !important;
-    color: #fff;
-}
-
-.snip-toolbar button {
-    transition: 0.15s;
-    font-family: Arial, sans-serif !important;
-    font-weight: 600;
-}

@@ -30,21 +30,37 @@
 
         el.innerHTML = `
             <div class="sticky-note-header">
+                <div class="format-toolbar">
+                    <button data-cmd="bold"><b>B</b></button>
+                    <button data-cmd="italic"><i>I</i></button>
+                    <button data-cmd="underline"><u>U</u></button>
+                    <button data-cmd="strikeThrough"><s>S</s></button>
+                    <button class="font-dec">A−</button>
+                    <button class="font-inc">A+</button>
+                </div>
                 <button class="add-btn">＋</button>
                 <button class="delete-btn">×</button>
             </div>
-            <div class="sticky-note-body" contenteditable="true">${note.content || ''}</div>
+            <div class="sticky-note-body" contenteditable="true">
+                ${note.content || ""}
+            </div>
         `;
 
         document.body.appendChild(el);
 
         const body = el.querySelector('.sticky-note-body');
+        el.querySelectorAll('[data-cmd]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                body.focus();
+                document.execCommand(btn.dataset.cmd, false, null);
+            });
+        });
 
         // Save content on blur
         body.addEventListener('blur', () => {
             const i = notes.findIndex(n => n.id === note.id);
             if (i !== -1) {
-                notes[i].content = body.innerText;
+                notes[i].content = body.innerHTML;
                 saveNotes();
             }
         });
@@ -86,7 +102,33 @@
             }
         });
         ro.observe(el);
+
+
+        let fontSize = note.fontSize || 14;
+        body.style.setProperty('--font-size', fontSize + 'px');
+
+        el.querySelector('.font-inc').addEventListener('click', () => {
+            fontSize += 1;
+            body.style.setProperty('--font-size', fontSize + 'px');
+            saveFont();
+        });
+
+        el.querySelector('.font-dec').addEventListener('click', () => {
+            fontSize = Math.max(10, fontSize - 1);
+            body.style.setProperty('--font-size', fontSize + 'px');
+            saveFont();
+        });
+
+        function saveFont() {
+            const i = notes.findIndex(n => n.id === note.id);
+            if (i !== -1) {
+                notes[i].fontSize = fontSize;
+                saveNotes();
+            }
+        }
     }
+
+
 
     function enableDrag(el, id) {
         const header = el.querySelector('.sticky-note-header');

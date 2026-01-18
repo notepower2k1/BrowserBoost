@@ -116,6 +116,8 @@ chrome.notifications.onClicked.addListener((id) => {
     }
 });
 
+let tempCaptureImage = null;
+
 /* =====================================================
    MESSAGE HANDLER
 ===================================================== */
@@ -147,6 +149,20 @@ chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
         const settings = await getWaterSettings();
         if (!settings.enabled) return;
         scheduleOneShotAlarm("water-reminder", settings.interval || 20);
+    }
+
+    if (msg.action === "open-capture-area-page") {
+        tempCaptureImage = msg.imageData || null;
+
+        chrome.tabs.create({
+            url: chrome.runtime.getURL("features/capture/capture-area.html")
+        });
+    }
+
+    if (msg.action === "get-capture-image") {
+        sendResponse({
+            imageData: tempCaptureImage
+        });
     }
 
     /* -------- Save Recording -------- */

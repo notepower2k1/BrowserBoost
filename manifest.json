@@ -22,8 +22,6 @@
                 "<all_urls>"
             ],
             "js": [
-                "assets/js/html2canvas.min.js",
-                "assets/js/interact.min.js",
                 "features/sticky-note/sticky-note.js",
                 "features/record/record-script.js"
             ],
