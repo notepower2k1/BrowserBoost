@@ -115,6 +115,28 @@ async function startRecording() {
             });
         }
 
+        const videoTrack = stream.getVideoTracks()[0];
+
+        videoTrack.onended = () => {
+            console.log("User clicked Stop sharing");
+
+            // Stop recorder nếu còn chạy
+            if (recorder && recorder.state !== "inactive") {
+                recorder.stop();
+            }
+
+            // Cleanup stream
+            stream.getTracks().forEach(t => t.stop());
+            stream = null;
+
+            // Reset UI
+            document.querySelector(".lr-status-text").textContent = "Idle";
+            document.querySelector(".lr-status").classList.remove("recording");
+
+            clearInterval(recordTimerInterval);
+            recordTimerInterval = null;
+        };
+
         recordedChunks = [];
         recorder = new MediaRecorder(stream);
 
@@ -173,6 +195,7 @@ function stopRecording() {
 
     if (stream) {
         stream.getTracks().forEach(t => t.stop());
+        stream = null;
     }
 
     document.querySelector(".lr-status").classList.remove("recording");
@@ -189,7 +212,22 @@ async function captureImage() {
     setButtonsLock(true);
 
     try {
-        const track = stream ? stream.getVideoTracks()[0] : (await navigator.mediaDevices.getDisplayMedia({ video: true })).getVideoTracks()[0];
+        let track = null;
+
+        if (stream) {
+            const t = stream.getVideoTracks()[0];
+            if (t && t.readyState === "live") {
+                track = t;
+            } else {
+                stream = null;
+            }
+        }
+
+        if (!track) {
+            const newStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            track = newStream.getVideoTracks()[0];
+        }
+
         const capture = new ImageCapture(track);
         const bitmap = await capture.grabFrame();
 
