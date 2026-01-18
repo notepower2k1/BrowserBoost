@@ -1,5 +1,15 @@
 import { saveSettings, loadSettings } from "./helper.js";
 
+const BLOCKED_HOSTS = [
+    "youtube.com",
+    "google.com",
+    "mail.google.com",
+    "keep.google.com",
+    "facebook.com",
+    "twitter.com",
+    "instagram.com"
+];
+
 const tabs = document.querySelectorAll(".tab-btn");
 const contents = document.querySelectorAll(".tab-content");
 
@@ -102,6 +112,12 @@ document.querySelector('#openNoteBtn').addEventListener('click', async () => {
 ================================ */
 document.querySelector("#openRecorderBtn").addEventListener("click", async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+    if (BLOCKED_HOSTS.some(host => tab.url.includes(host))) {
+        alert('You can not record on this website!');
+        return;
+    };
+
     chrome.tabs.sendMessage(tab.id, { action: "open-record-widget" });
 });
 

@@ -5,16 +5,6 @@ let recordStartTime = null;
 let recordTimerInterval = null;
 let isBusy = false; // true khi đang thực hiện capture/record
 
-const BLOCKED_HOSTS = [
-    "youtube.com",
-    "google.com",
-    "mail.google.com",
-    "keep.google.com",
-    "facebook.com",
-    "twitter.com",
-    "instagram.com"
-];
-
 
 // ------------------- INSERT UI -----------------------
 function injectRecorderUI() {
