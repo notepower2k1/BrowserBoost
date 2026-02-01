@@ -1,47 +1,152 @@
 /* =========================
-   General Reset
-========================= */
+   Modern Design System (HSL)
+   ========================= */
+:root {
+    --primary: hsl(210, 100%, 50%);
+    --primary-hover: hsl(210, 100%, 45%);
+    --primary-light: hsl(210, 100%, 96%);
+    --bg: hsl(210, 30%, 98%);
+    --surface: hsl(0, 0%, 100%);
+    --text: hsl(210, 40%, 10%);
+    --text-muted: hsl(210, 20%, 45%);
+    --border: hsl(210, 20%, 90%);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --glass: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.4);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    background: #eef6f9;
-    font-family: sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
-
-#bookmark-container {
-    min-width: 700px;
-    min-height: 700px;
-}
-
-#tabmanager-container {
-    min-width: 700px;
-    min-height: 700px;
-}
-
-#water-container {
-    min-width: 700px;
-    min-height: 700px;
-}
-
-#screen-container {
-    min-width: 700px;
-    min-height: 700px;
-}
-
-#eye-relax-container {
-    min-width: 700px;
-    min-height: 700px;
-}
-
 
 /* =========================
-   Tabs
-========================= */
-#tab-bar {
+   Containers
+   ========================= */
+#tab-contents {
+    min-height: 500px;
+    padding-bottom: 100px;
+    /* Space for bottom tab bar only */
+}
+
+.tab-content {
+    opacity: 0;
+    display: none;
+    pointer-events: none;
+}
+
+.tab-content.active {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+    animation: featureEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.tab-content.hidden {
+    display: none !important;
+}
+
+@keyframes featureEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+        filter: blur(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+        filter: blur(0);
+    }
+}
+
+
+#bookmark-container,
+#tabmanager-container,
+#water-container,
+#screen-container,
+#eye-relax-container,
+#clipboard-container {
+    min-width: 750px;
+    min-height: 600px;
+}
+
+/* =========================
+   Top Bar (Support Buttons)
+   ========================= */
+#support-btn {
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+#support-btn button {
+    font-size: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 8px;
+    width: 42px;
+    height: 42px;
+    display: flex;
     align-items: center;
-    background: #f8f8f8;
-    border-top: 1px solid #ddd;
-    padding: 6px 0;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-muted);
+}
+
+#support-btn button:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+hr {
+    display: none;
+    /* Removed in favor of cleaner containers */
+}
+
+/* =========================
+   Bottom Tab Bar
+   ========================= */
+#tab-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    padding: 8px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
 }
 
 .tab-btn {
@@ -49,401 +154,354 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    background: none;
+    gap: 4px;
+    background: transparent;
     border: none;
-    color: #555;
-    font-size: 12px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 64px;
+    height: 54px;
+    border-radius: var(--radius-md);
 }
 
 .tab-btn i {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .tab-btn:hover {
-    color: #0078ff;
-    transform: translateY(-2px);
+    color: var(--primary);
+    background: var(--primary-light);
 }
 
 .tab-btn.active {
-    color: #0078ff;
-}
-
-.tab-content.hidden {
-    display: none;
-}
-
-.tab-content {
-    opacity: 0;
-    transition: all 0.3s ease;
-    pointer-events: none;
-}
-
-.tab-content.active {
-    opacity: 1;
-    pointer-events: auto;
+    color: var(--primary);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
 }
 
 /* =========================
-   Modal
-========================= */
+   Modals
+   ========================= */
 .modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
     display: flex;
     justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    align-items: flex-start;
+    /* Align to top instead of center */
+    padding-top: 50px;
+    /* Space from the top of the browser */
+    z-index: 2000;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+    /* Allow scrolling inside the modal background if needed */
 }
 
 .modal.hidden {
     display: none;
+    opacity: 0;
 }
 
 .modal-box {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;
+    background: var(--surface);
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    width: 360px;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* =========================
+   Color List for Modals
+   ========================= */
+.color-list {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0;
+    justify-content: center;
 }
 
-.modal-buttons button {
-    background: #fff;
-    border: 1px solid #bbb;
-    border-radius: 5px;
-    padding: 4px 6px;
+.color-list span {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s;
+    border: 3px solid transparent;
+    transition: all 0.2s ease;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
-.modal-buttons button:hover {
-    background: #f1f3f6;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+.color-list span:hover {
+    transform: scale(1.15);
+}
+
+.color-list span.selected {
+    border-color: var(--primary);
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.color-list span[data-color="grey"] {
+    background: #5f6368;
+}
+
+.color-list span[data-color="blue"] {
+    background: #1a73e8;
+}
+
+.color-list span[data-color="red"] {
+    background: #d93025;
+}
+
+.color-list span[data-color="yellow"] {
+    background: #f9ab00;
+}
+
+.color-list span[data-color="green"] {
+    background: #1e8e3e;
+}
+
+.color-list span[data-color="pink"] {
+    background: #d01884;
+}
+
+.color-list span[data-color="purple"] {
+    background: #9334e6;
+}
+
+.color-list span[data-color="cyan"] {
+    background: #007b83;
+}
+
+.color-list span[data-color="orange"] {
+    background: #fa903e;
 }
 
 .modal-buttons {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    gap: 12px;
+    margin-top: 24px;
 }
 
-.modal-box input {
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    padding: 8px;
+.modal-buttons button {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+}
+
+.modal-buttons button.primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
+
+.modal-buttons button:hover {
+    filter: brightness(0.95);
 }
 
 
 /* =========================
-   Groups
-========================= */
+   Inputs & Buttons
+   ========================= */
+input,
+select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
 
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px hsla(210, 100%, 50%, 0.4);
+}
+
+/* =========================
+   Tab Manager Groups
+   ========================= */
 .groups-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    padding: 16px;
-    justify-content: flex-start;
-    box-sizing: border-box;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
 }
 
 .group-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    transition: all 0.3s ease;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
-    min-width: 280px;
-    padding: 10px;
-    border: 1px solid #bbb;
-    border-radius: 8px;
-    background: #f8f9fa;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-    cursor: pointer;
 }
 
 .group-box:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
     transform: translateY(-2px);
-}
-
-#bookmark-container .group-header {
-    background: linear-gradient(180deg, #e3e6eb 0%, #d3d6db 100%);
 }
 
 .group-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-    padding: 6px 10px;
-
-    border-bottom: 1px solid #c0c3c7;
-    font-weight: bold;
-    color: #333;
-    user-select: none;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
 }
 
-.group-header .group-title {
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.group-header-actions {
-    display: flex;
-    gap: 6px;
-}
-
-.group-header .btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #555;
-    transition: color 0.2s;
-}
-
-.group-header .btn:hover {
-    color: white;
-}
-
-
-#group-select {
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    padding: 8px;
-}
-
-
-#support-btn {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding: 10px 16px;
-    background: #fff;
-}
-
-#support-btn button {
-    font-size: 20px;
-    font-weight: 600;
-    gap: 10px;
-    background: #fff;
-    border: 1px solid #bbb;
-    border-radius: 5px;
-    padding: 4px 6px;
-    cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s;
-}
-
-#support-btn button:hover {
-    background: #f1f3f6;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+.group-title {
+    font-weight: 700;
+    font-size: 16px;
 }
 
 /* =========================
    Toolbar
-========================= */
-
+   ========================= */
 #toolbar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #f8f8f8;
-    border-top: 1px solid #ccc;
-    padding: 8px 0px 8px 0px;
+    position: sticky;
+    top: 75px;
+    /* Base on support-btn height */
+    background: var(--glass);
+    backdrop-filter: blur(24px);
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
     display: flex;
-    flex-wrap: wrap;
-    /* cho phép xuống dòng khi màn hình nhỏ */
-    justify-content: space-between;
     align-items: center;
-    gap: 8px;
-    /* khoảng cách giữa phần tử */
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    z-index: 999;
-}
-
-#toolbar .toolbar-btn.active {
-    outline: 1px solid #ff9800;
-    background: rgba(0, 255, 128, 0.15);
-    transition: background 0.2s;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    justify-content: space-between;
+    gap: 20px;
+    z-index: 100;
 }
 
 .toolbar-search {
-    flex: 1 1 200px;
-    /* chiếm tối thiểu 200px, có thể co dãn */
-    min-width: 120px;
-    /* không nhỏ quá */
+    flex: 1;
+    display: flex;
 }
 
 .toolbar-search input {
     width: 100%;
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+    margin: 0;
+    background: rgba(255, 255, 255, 0.6);
+    height: 40px;
 }
 
 .toolbar-actions {
     display: flex;
-    flex-wrap: wrap;
-    /* cho phép các nút xuống dòng khi cần */
     gap: 8px;
-    flex: 0 1 auto;
+    flex-shrink: 0;
 }
 
 .toolbar-btn {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: center;
     font-size: 16px;
-    white-space: nowrap;
-    /* không bị wrap text trong nút */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-muted);
 }
 
-.toolbar-btn:hover {
-    background-color: #f0f0f0;
+/* =========================
+   Cards & Layout Components
+   ========================= */
+.card {
+    background: var(--surface);
+    padding: 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
 }
-
-/* Media query cho màn hình rất nhỏ */
-@media (max-width: 480px) {
-    #toolbar {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 8px;
-    }
-
-    .toolbar-actions {
-        justify-content: space-between;
-        flex-wrap: wrap;
-    }
-}
-
-/* toggle switch */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 46px;
-    height: 24px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    inset: 0;
-    background: #c7d4dd;
-    border-radius: 34px;
-    transition: .25s;
-}
-
-.slider:before {
-    content: "";
-    position: absolute;
-    left: 3px;
-    bottom: 3px;
-    width: 18px;
-    height: 18px;
-    background: #fff;
-    border-radius: 50%;
-    transition: .25s;
-}
-
-.switch input:checked+.slider {
-    background: #4db6ff;
-}
-
-.switch input:checked+.slider:before {
-    transform: translateX(22px);
-}
-
 
 h3 {
-    margin: 14px 0 8px;
-    font-size: 15px;
-    color: #023;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    color: var(--text);
 }
 
-.card {
-    background: #f6f9fc;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #d9e7f0;
-    margin-bottom: 12px;
-}
-
-.row,
-.reminder-row,
-.inline-row {
+.row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
-.row label {
-    flex: 1;
-    font-size: 13px;
-    color: #034;
+label {
+    font-size: 14px;
     font-weight: 600;
+    color: var(--text-muted);
 }
 
-/* Inputs */
-.row input,
-.row select {
-    flex: 1;
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid #cbe3fb;
-    background: #fff;
-    transition: 0.2s;
+/* =========================
+   Custom Scrollbar
+   ========================= */
+::-webkit-scrollbar {
+    width: 8px;
 }
 
-.row input:focus,
-.row select:focus {
-    outline: none;
-    border-color: #79b6ff;
-    box-shadow: 0 0 0 2px rgba(121, 182, 255, 0.3);
+::-webkit-scrollbar-track {
+    background: var(--bg);
 }
 
-.inline-row {
-    gap: 10px;
-}
-
-.radio-inline {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 0 0 auto;
-}
-
-/* primary save */
-.btn-primary {
-    width: 100%;
-    padding: 10px 12px;
+::-webkit-scrollbar-thumb {
+    background: var(--border);
     border-radius: 10px;
-    background: linear-gradient(180deg, #4db6ff, #3b9dff);
-    color: #fff;
-    border: none;
-    font-weight: 800;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
 }

@@ -1,64 +1,152 @@
-/* ========== ROOT ========== */
+/* ========== Design System ========== */
+:root {
+    --primary: hsl(210, 100%, 50%);
+    --primary-light: hsl(210, 100%, 96%);
+    --bg: hsl(200, 40%, 96%);
+    /* Softer blue bg */
+    --surface: hsl(0, 0%, 100%);
+    --text: hsl(210, 40%, 10%);
+    --text-muted: hsl(210, 20%, 45%);
+    --border: hsl(210, 20%, 90%);
+}
+
 html,
 body {
     margin: 0;
     width: 100%;
     height: 100%;
-    background: #eef7fb;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-        "Segoe UI", system-ui, sans-serif;
-    color: #111;
+    background: var(--bg);
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--text);
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-/* ========== HEADER ========== */
+.water-popup {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    background: radial-gradient(circle at top, #ffffff 0%, var(--bg) 100%);
+}
+
+/* ========== Header ========== */
 .header {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 14px 10px 8px;
+    justify-content: center;
+    text-align: center;
+}
+
+.header-img-wrap {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
 }
 
 .header-img {
-    width: 150px;
-    height: auto;
-    margin-bottom: 6px;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 24px rgba(0, 150, 255, 0.2));
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .header-text {
-    font-size: 30px;
-    font-weight: 600;
-    color: #035f8a;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    margin: 0;
 }
 
-/* ========== ACTIONS ========== */
+.header-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+/* ========== Actions ========== */
 .focus-wrap {
-    padding: 10px;
+    margin-top: 20px;
 }
 
 .actions {
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.quick-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     gap: 8px;
 }
 
-/* Quick buttons */
-.quick-btn {
-    flex: 1;
-    padding: 10px 0;
-    border-radius: 12px;
-    border: none;
-    background: linear-gradient(180deg, #e3f2fa 0%, #cfe8f6 100%);
-    color: #024a6b;
-    font-weight: 600;
-    box-shadow: 0 3px 8px rgba(0, 120, 180, 0.18);
-    cursor: pointer;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-
 .quick-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0, 120, 180, 0.25);
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 102, 255, 0.15);
 }
 
-.quick-btn:active {
-    transform: scale(0.97);
+.quick-btn::before {
+    content: '💧';
+    font-size: 14px;
+}
+
+.quick-btn[data-amount="500"] {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.quick-btn[data-amount="500"]:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Entrance Animation */
+body {
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

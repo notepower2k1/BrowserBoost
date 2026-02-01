@@ -1,15 +1,109 @@
-.snip-toolbar button.active {
-    background: #4caf50 !important;
-    color: #fff;
+:root {
+    --cap-primary: hsl(210, 100%, 50%);
+    --cap-bg: hsl(210, 30%, 98%);
+    --cap-surface: hsl(0, 0%, 100%);
+    --cap-text: hsl(210, 40%, 10%);
+    --cap-border: hsl(210, 20%, 90%);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #1a1a1a;
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: white;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Toolbar */
+.snip-toolbar {
+    background: rgba(40, 44, 52, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 .snip-toolbar button {
-    transition: 0.15s;
-    font-family: Arial, sans-serif !important;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
     font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.tool-btn.active {
-    background: #4CAF50 !important;
-    color: #fff;
+.snip-toolbar button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.snip-toolbar button.active {
+    background: var(--cap-primary) !important;
+    color: white !important;
+    border-color: var(--cap-primary) !important;
+}
+
+.snip-toolbar .primary-btn {
+    background: var(--cap-primary);
+    color: white;
+    border: none;
+}
+
+.snip-toolbar .primary-btn:hover {
+    background: hsl(210, 100%, 45%);
+}
+
+.divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Canvas Area */
+#workspace {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+canvas {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    max-width: 95%;
+    max-height: 95%;
+}
+
+/* Tooltip/Helper */
+.cap-hint {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    pointer-events: none;
 }

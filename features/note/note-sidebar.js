@@ -116,10 +116,11 @@ function resizeImagesInNote(maxWidth) {
     });
 }
 
-const toolbarButtons = document.querySelectorAll('#note-toolbar button, #note-toolbar input[type=color]');
+const toolbarButtons = document.querySelectorAll('#note-toolbar button[data-cmd]');
+const colorInput = document.getElementById('foreColor');
 
 toolbarButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
         const cmd = btn.dataset.cmd;
         let value = null;
 
@@ -128,23 +129,21 @@ toolbarButtons.forEach(btn => {
             if (!value) return;
         } else if (cmd === 'undo' || cmd === 'redo') {
             document.execCommand(cmd, false, null);
-        } else if (cmd === 'foreColor') {
-            value = btn.value; // lấy màu từ input color
+        } else {
+            document.execCommand(cmd, false, null);
         }
 
-        document.execCommand(cmd, false, value);
         saveCurrentNoteContent();
     });
-
-    // Nếu là color input
-    if (btn.tagName === 'INPUT' && btn.type === 'color') {
-        btn.addEventListener('input', () => {
-            const cmd = btn.dataset.cmd;
-            document.execCommand(cmd, false, btn.value);
-            saveCurrentNoteContent();
-        });
-    }
 });
+
+if (colorInput) {
+    colorInput.addEventListener('input', () => {
+        const cmd = colorInput.dataset.cmd;
+        document.execCommand(cmd, false, colorInput.value);
+        saveCurrentNoteContent();
+    });
+}
 
 document.getElementById('font-size').addEventListener('change', (e) => {
     const size = e.target.value;

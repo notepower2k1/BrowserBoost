@@ -17,7 +17,14 @@ chrome.runtime.onInstalled.addListener(() => {
         title: "Copy to note",
         contexts: ["all"]
     });
+
+    chrome.contextMenus.create({
+        id: "saveImage",
+        title: "Save Image to Helper Clipboard",
+        contexts: ["image"]
+    });
 });
+
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (info.menuItemId === "addNote") {
@@ -40,7 +47,12 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (info.menuItemId === "copyToNote") {
         await handleCopyToNote(info);
     }
+
+    if (info.menuItemId === "saveImage") {
+        await handleSaveImage(info, tab);
+    }
 });
+
 
 /* =====================================================
    STORAGE HELPERS
@@ -108,8 +120,8 @@ chrome.notifications.onClicked.addListener((id) => {
         chrome.windows.create({
             url: chrome.runtime.getURL("features/eye-relax/relax-window.html"),
             type: "popup",
-            width: 360,
-            height: 360
+            width: 400,
+            height: 500
         });
     }
 
@@ -117,8 +129,8 @@ chrome.notifications.onClicked.addListener((id) => {
         chrome.windows.create({
             url: chrome.runtime.getURL("features/water-reminder/water-popup.html"),
             type: "popup",
-            width: 360,
-            height: 360
+            width: 400,
+            height: 500
         });
     }
 });
@@ -128,50 +140,92 @@ let tempCaptureImage = null;
 /* =====================================================
    MESSAGE HANDLER
 ===================================================== */
-chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
-    /* -------- Eye Relax -------- */
-    if (msg.action === "eye-snooze") {
-        const settings = await getEyeRelaxSettings();
-        await scheduleOneShotAlarm(ALARMS.EYE, msg.minutes || settings.interval || 20);
-    }
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    // Helper to handle async messaging
+    const handleAsync = async () => {
+        /* -------- Eye Relax -------- */
+        if (msg.action === "eye-snooze") {
+            const settings = await getEyeRelaxSettings();
+            await scheduleOneShotAlarm(ALARMS.EYE, msg.minutes || settings.interval || 20);
+        }
 
-    if (msg.action === "update-eye-relax") {
-        const settings = await getEyeRelaxSettings();
-        if (!settings.enabled) return;
-        await scheduleOneShotAlarm(ALARMS.EYE, settings.interval || 20);
-    }
+        if (msg.action === "update-eye-relax") {
+            const settings = await getEyeRelaxSettings();
+            if (!settings.enabled) return;
+            await scheduleOneShotAlarm(ALARMS.EYE, settings.interval || 20);
+        }
 
-    /* -------- Water Reminder -------- */
-    if (msg.action === "update-water-reminder") {
-        const settings = await getWaterSettings();
-        if (!settings.enabled) return;
-        await scheduleOneShotAlarm(ALARMS.WATER, settings.interval || 20);
-    }
+        /* -------- Water Reminder -------- */
+        if (msg.action === "update-water-reminder") {
+            const settings = await getWaterSettings();
+            if (!settings.enabled) return;
+            await scheduleOneShotAlarm(ALARMS.WATER, settings.interval || 20);
+        }
 
-    if (msg.action === "open-capture-area-page") {
-        tempCaptureImage = msg.imageData || null;
+        if (msg.action === "open-capture-area-page") {
+            tempCaptureImage = msg.imageData || null;
+            chrome.tabs.create({
+                url: chrome.runtime.getURL("features/capture/capture-area.html")
+            });
+        }
 
-        chrome.tabs.create({
-            url: chrome.runtime.getURL("features/capture/capture-area.html")
-        });
-    }
+        /* -------- Save Recording -------- */
+        if (msg.action === "save-recording") {
+            try {
+                await chrome.downloads.download({
+                    url: msg.blobUrl,
+                    filename: msg.filename,
+                    saveAs: true
+                });
+                return { success: true };
+            } catch (err) {
+                return { success: false, error: err.message };
+            }
+        }
+
+        /* -------- Clipboard Manager -------- */
+        if (msg.action === "save-clipboard") {
+            const { type, text, image, url, title, timestamp } = msg;
+            try {
+                const res = await chrome.storage.local.get("clipboardHistory");
+                let history = res.clipboardHistory || [];
+
+                // Skip if same as last entry (only for text)
+                if (type === 'text' && history.length > 0 && history[0].text === text) return;
+
+                // Add to start
+                history.unshift({
+                    type: type || 'text',
+                    text,
+                    image,
+                    url,
+                    title,
+                    timestamp
+                });
+
+                // Limit to 50
+                if (history.length > 50) history = history.slice(0, 50);
+
+                await chrome.storage.local.set({ clipboardHistory: history });
+            } catch (err) {
+                console.error("Storage error:", err);
+            }
+        }
+    };
 
     if (msg.action === "get-capture-image") {
-        sendResponse({
-            imageData: tempCaptureImage
-        });
+        sendResponse({ imageData: tempCaptureImage });
+        return false; // synchronous
     }
 
-    /* -------- Save Recording -------- */
-    if (msg.action === "save-recording") {
-        chrome.downloads.download({
-            url: msg.blobUrl,
-            filename: msg.filename,
-            saveAs: true
-        });
+    // Run async tasks
+    handleAsync().then(response => {
+        sendResponse(response || { success: true });
+    }).catch(err => {
+        sendResponse({ success: false, error: err.message });
+    });
 
-        sendResponse({ success: true });
-    }
+    return true; // Keep the message channel open for handleAsync
 });
 
 /* =====================================================
@@ -197,4 +251,43 @@ async function handleCopyToNote(info) {
 
     note1.content += (note1.content ? "\n" : "") + selectedText;
     await chrome.storage.local.set({ sidebarNotes: notes });
+}
+
+async function handleSaveImage(info, tab) {
+    if (!info.srcUrl || !tab.id) return;
+
+    try {
+        // Use content script to grab image as DataURL (more reliable for CORS)
+        chrome.tabs.sendMessage(tab.id, {
+            action: 'grab-image-data',
+            srcUrl: info.srcUrl
+        }, async (response) => {
+            if (response && response.dataUrl) {
+                const res = await chrome.storage.local.get("clipboardHistory");
+                let history = res.clipboardHistory || [];
+
+                history.unshift({
+                    type: 'image',
+                    text: '[Image] Saved via Context Menu',
+                    image: response.dataUrl,
+                    url: info.pageUrl || tab.url,
+                    title: tab.title || 'Context Menu Capture',
+                    timestamp: Date.now()
+                });
+
+                if (history.length > 50) history = history.slice(0, 50);
+                await chrome.storage.local.set({ clipboardHistory: history });
+
+                // Show visual feedback
+                chrome.notifications.create("img-save-" + Date.now(), {
+                    type: "basic",
+                    iconUrl: response.dataUrl,
+                    title: "Image Saved",
+                    message: "The image has been added to your clipboard history."
+                });
+            }
+        });
+    } catch (err) {
+        console.error("Failed to save image:", err);
+    }
 }

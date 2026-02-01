@@ -2,42 +2,56 @@
 <div class="water-root">
     <div class="water-top">
         <div class="cup-wrap" id="cupWrap">
-            <!-- SVG cup with fill -->
             <svg viewBox="0 0 200 260" class="cup-svg" id="cupSvg" aria-hidden="true">
                 <defs>
                     <linearGradient id="gradA" x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="0%" stop-color="#7DD2FF" />
-                        <stop offset="100%" stop-color="#3B9DFF" />
+                        <stop offset="0%" stop-color="hsl(210, 100%, 75%)" />
+                        <stop offset="100%" stop-color="hsl(210, 100%, 50%)" />
                     </linearGradient>
                     <linearGradient id="cupOutlineGrad" x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="0%" stop-color="#e3e6eb" />
-                        <stop offset="100%" stop-color="#d3d6db" />
+                        <stop offset="0%" stop-color="hsl(210, 20%, 95%)" />
+                        <stop offset="100%" stop-color="hsl(210, 20%, 85%)" />
                     </linearGradient>
                     <filter id="wobble" x="-50%" y="-50%" width="200%" height="200%">
                         <feTurbulence baseFrequency="0.02" numOctaves="2" result="t" />
-                        <feDisplacementMap in="SourceGraphic" in2="t" scale="3" xChannelSelector="R"
+                        <feDisplacementMap in="SourceGraphic" in2="t" scale="2" xChannelSelector="R"
                             yChannelSelector="G" />
                     </filter>
                 </defs>
 
-                <!-- cup outline -->
+                <!-- Thân cốc với thiết kế hiện đại hơn -->
                 <g transform="translate(0,10)">
-                    <path class="cup-outline"
-                        d="M40 20 Q35 10 40 6 L160 6 Q165 10 160 20 L150 220 Q150 240 120 240 L80 240 Q50 240 50 220 Z"
-                        fill="none" stroke="url(#cupOutlineGrad)" stroke-width="4" stroke-linejoin="round" />
+                    <!-- Bóng cốc -->
+                    <path d="M40 20 L50 220 Q55 240 100 240 Q145 240 150 220 L160 20 Z" fill="rgba(0,0,0,0.02)" />
+
+                    <!-- Viền cốc chính -->
+                    <path class="cup-outline" d="M35 10 L50 220 Q55 240 100 240 Q145 240 150 220 L165 10" fill="white"
+                        stroke="url(#cupOutlineGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+
+                    <!-- Mặt trên của cốc (tạo độ dày) -->
+                    <ellipse cx="100" cy="10" rx="65" ry="8" fill="none" stroke="url(#cupOutlineGrad)"
+                        stroke-width="4" />
+
                     <!-- water mask -->
                     <clipPath id="cupClip">
-                        <path
-                            d="M44 26 Q40 16 44 10 L156 10 Q160 16 156 26 L146 216 Q146 236 120 236 L80 236 Q54 236 54 216 Z" />
+                        <path d="M40 15 L53 218 Q55 235 100 235 Q145 235 147 218 L160 15 Z" />
                     </clipPath>
 
-                    <!-- water rectangle controlled by JS -->
+                    <!-- Nước -->
                     <g clip-path="url(#cupClip)">
-                        <rect id="waterRect" x="44" y="50" width="112" height="200" fill="url(#gradA)"
+                        <rect id="waterRect" x="35" y="10" width="130" height="230" fill="url(#gradA)"
                             filter="url(#wobble)" />
-                        <!-- optional wave -->
-                        <path id="waterWave" d="" fill="#ffffff" fill-opacity="0.08" />
+                        <!-- Sóng nước -->
+                        <path id="waterWave" d="" fill="white" fill-opacity="0.25" />
+
+                        <!-- Hiển thị bọt khí nhỏ (Detail premium) -->
+                        <circle cx="70" cy="180" r="2" fill="white" opacity="0.4" />
+                        <circle cx="130" cy="150" r="3" fill="white" opacity="0.3" />
+                        <circle cx="100" cy="200" r="2" fill="white" opacity="0.5" />
                     </g>
+
+                    <!-- Ánh sáng phản chiếu trên thành cốc -->
+                    <path d="M145 30 L138 180" stroke="white" stroke-width="4" stroke-linecap="round" opacity="0.3" />
                 </g>
             </svg>
 
@@ -49,35 +63,39 @@
     </div>
 
     <div class="quick-add">
-        <button class="quick-btn" data-amount="100">+100</button>
-        <button class="quick-btn" data-amount="250">+250</button>
-        <button class="quick-btn" data-amount="500">+500</button>
+        <button class="quick-btn" data-amount="100" tooltip="Add 100ml">+100ml</button>
+        <button class="quick-btn" data-amount="250" tooltip="Add 250ml">+250ml</button>
+        <button class="quick-btn" data-amount="500" tooltip="Add 500ml">+500ml</button>
     </div>
 
     <div class="stats-row">
         <div class="streak-box">
-            <div class="label">🔥 Streak</div>
+            <div class="label">🔥 Continuous</div>
             <div class="value" id="streakCount">0 days</div>
         </div>
 
         <div class="goal-box">
-            <div class="label">Today's Goal</div>
+            <div class="label">Target Status</div>
             <div class="value" id="todayStatus">In Progress</div>
         </div>
     </div>
 
     <div class="controls-row">
-        <button id="openSettings" class="settings-btn" title="Settings">
-            <i class="fa-solid fa-gear"></i> Settings
-        </button>
-        <button id="resetToday" class="reset-btn" title="Reset today's intake">Reset</button>
-        <!-- ON/OFF -->
         <div class="reminder-row">
             <span>Reminder</span>
             <label class="switch">
                 <input type="checkbox" id="reminder-toggle">
                 <span class="slider"></span>
             </label>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+            <button id="openSettings" class="settings-btn" tooltip="Adjust goals and intervals">
+                <i class="fa-solid fa-gear"></i> Settings
+            </button>
+            <button id="resetToday" class="reset-btn" tooltip="Clear all entries for today">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
         </div>
     </div>
 </div>

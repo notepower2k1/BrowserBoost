@@ -4,15 +4,13 @@
     <span id="folder-count"></span>
 </div>
 
-<div id="bookmark-list" class="grid"></div>
-
 <div id="toolbar">
     <div class="toolbar-search">
         <input type="text" id="search-input" placeholder="Search website title..." />
     </div>
 
     <div class="toolbar-actions">
-        <button id="more-action" class="btn toolbar-btn" tooltip="More action">
+        <button id="more-action" class="btn toolbar-btn" tooltip="Folder actions">
             <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
         <button id="open-add-folder-modal" class="btn toolbar-btn" tooltip="Add folder">
@@ -21,27 +19,26 @@
         <button id="open-rename-folder-modal" class="btn toolbar-btn" tooltip="Rename folder">
             <i class="fa-solid fa-pen"></i>
         </button>
-        <button id="delete-multiple-web" class="btn toolbar-btn" tooltip="Delete multiple web">
+        <button id="delete-multiple-web" class="btn toolbar-btn" tooltip="Batch delete">
             <i class="fa-solid fa-dumpster"></i>
         </button>
-        <button id="toggle-view" class="btn toolbar-btn" tooltip="Toggle view mode">
+        <button id="toggle-view" class="btn toolbar-btn" tooltip="Toggle view">
             <i class="fa-solid fa-eye"></i>
         </button>
     </div>
 </div>
 
+<div id="bookmark-list" class="grid"></div>
+
 <!-- Modal rename folder -->
 <div id="rename-modal" class="modal hidden">
     <div class="modal-box">
+        <h3 class="modal-title">Rename Folder</h3>
         <select id="folder-select"></select>
         <input id="new-folder-name-input" type="text" placeholder="New folder name" />
         <div class="modal-buttons">
-            <button id="confirm-rename" class="btn add">
-                <i class="fa-solid fa-add"></i>
-            </button>
-            <button id="cancel-rename" class="btn delete">
-                <i class="fa-solid fa-x"></i>
-            </button>
+            <button id="confirm-rename" class="primary">Save Changes</button>
+            <button id="cancel-rename">Cancel</button>
         </div>
     </div>
 </div>
@@ -49,38 +46,55 @@
 <!-- Modal add folder -->
 <div id="add-folder-modal" class="modal hidden">
     <div class="modal-box">
+        <h3 class="modal-title">Create New Folder</h3>
         <input id="new-folder-name" type="text" placeholder="Folder name..." />
         <div class="modal-buttons">
-            <button id="confirm-add-folder" class="btn add">
-                <i class="fa-solid fa-plus"></i>
-            </button>
-            <button id="cancel-add-folder" class="btn delete">
-                <i class="fa-solid fa-x"></i>
-            </button>
+            <button id="confirm-add-folder" class="primary">Create Folder</button>
+            <button id="cancel-add-folder">Cancel</button>
         </div>
     </div>
 </div>
 
+<!-- Folder Actions Modal -->
 <div id="folder-action-modal" class="modal hidden">
     <div class="modal-box">
-        <div class="modal-buttons">
-            <button id="open-all-tabs" class="btn add">Open All</button>
-            <button id="open-all-new-window" class="btn add">Open All in new window</button>
-            <button id="open-incognito" class="btn add">Open All in incognito window</button>
-            <button id="delete-folder" class="btn delete">Delete Folder</button>
-            <button id="close-modal" class="btn delete">Cancel</button>
+        <h3 class="modal-title">Folder Actions</h3>
+        <div class="modal-buttons-vertical">
+            <button id="open-all-tabs" class="primary">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open All in Tabs
+            </button>
+            <button id="open-all-new-window" class="primary">
+                <i class="fa-solid fa-window-restore"></i> Open in New Window
+            </button>
+            <button id="open-incognito" class="primary">
+                <i class="fa-solid fa-user-secret"></i> Open Incognito
+            </button>
+            <button id="delete-folder" class="delete">
+                <i class="fa-solid fa-trash-can"></i> Delete Folder
+            </button>
+            <button id="close-modal" class="secondary">Close</button>
         </div>
     </div>
 </div>
 
+<!-- Website Actions Modal -->
 <div id="website-action-modal" class="modal hidden">
     <div class="modal-box">
-        <div class="modal-buttons">
-            <button id="open-tab" class="btn add">Open in new tab</button>
-            <button id="open-window" class="btn add">Open in new window</button>
-            <button id="open-incognito" class="btn add">Open in incognito window</button>
-            <button id="delete-website" class="btn delete">Delete Website</button>
-            <button id="close-website-modal" class="btn delete">Cancel</button>
+        <h3 class="modal-title">Bookmark Options</h3>
+        <div class="modal-buttons-vertical">
+            <button id="open-tab" class="primary">
+                <i class="fa-solid fa-plus"></i> Open in New Tab
+            </button>
+            <button id="open-window" class="primary">
+                <i class="fa-solid fa-window-maximize"></i> Open in New Window
+            </button>
+            <button id="open-incognito" class="primary">
+                <i class="fa-solid fa-user-secret"></i> Open Incognito
+            </button>
+            <button id="delete-website" class="delete">
+                <i class="fa-solid fa-trash"></i> Delete Bookmark
+            </button>
+            <button id="close-website-modal" class="secondary">Close</button>
         </div>
     </div>
 </div>

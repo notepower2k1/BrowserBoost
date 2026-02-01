@@ -9,19 +9,24 @@
 
 <body>
     <div class="focus-wrap">
+        <div class="focus-header">
+            <h1>Eye Relax</h1>
+            <p>Look 20 feet away</p>
+        </div>
+
         <div class="ring-wrapper breathing">
-            <svg class="progress-ring" width="220" height="220">
-                <circle class="bg" cx="110" cy="110" r="96" />
-                <circle class="progress" cx="110" cy="110" r="96" />
+            <svg class="progress-ring" width="200" height="200">
+                <circle class="bg" cx="100" cy="100" r="88" />
+                <circle class="progress" cx="100" cy="100" r="88" />
             </svg>
 
             <div class="time-text" id="timeText">--s</div>
         </div>
 
         <div class="actions">
-            <button id="snooze5">Snooze 5m</button>
-            <button id="snooze10">Snooze 10m</button>
-            <button id="done" disabled>Done</button>
+            <button id="snooze5" title="Remind again in 5 minutes">5m Snooze</button>
+            <button id="snooze10" title="Remind again in 10 minutes">10m Snooze</button>
+            <button id="done" disabled>Complete Session</button>
         </div>
     </div>
 

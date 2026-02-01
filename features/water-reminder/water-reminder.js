@@ -91,6 +91,16 @@ function setupEventHandlers() {
     document.querySelectorAll('.quick-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const amount = Number(btn.dataset.amount || 0);
+
+            // Trigger animation
+            const cupWrap = document.getElementById("cupWrap");
+            if (cupWrap) {
+                cupWrap.classList.remove("adding-water");
+                void cupWrap.offsetWidth; // trigger reflow
+                cupWrap.classList.add("adding-water");
+                setTimeout(() => cupWrap.classList.remove("adding-water"), 600);
+            }
+
             await utils.addIntake(amount);
             await checkIfCompletedAndUpdateAlarms();
             await refreshUI();

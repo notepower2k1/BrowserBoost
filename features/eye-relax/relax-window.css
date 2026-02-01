@@ -1,112 +1,177 @@
-/* ========== ROOT ========== */
+/* ========== Design System ========== */
+:root {
+    --primary: hsl(210, 100%, 50%);
+    --bg: hsl(210, 30%, 98%);
+    --surface: hsl(0, 0%, 100%);
+    --text: hsl(210, 40%, 10%);
+    --text-muted: hsl(210, 20%, 45%);
+    --border: hsl(210, 20%, 90%);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --radius-lg: 24px;
+}
+
 html,
 body {
     margin: 0;
     width: 100%;
     height: 100%;
-    background: #f7f7f8;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-        "Segoe UI", system-ui, sans-serif;
-    color: #111;
+    background: var(--bg);
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--text);
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-/* ========== LAYOUT ========== */
+/* ========== Focus Layout ========== */
 .focus-wrap {
-    height: 100%;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 30px 20px;
+    background: radial-gradient(circle at center, white 0%, var(--bg) 100%);
 }
 
-/* ========== RING ========== */
+.focus-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.focus-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.focus-header p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* ========== Progress Ring ========== */
 .ring-wrapper {
     position: relative;
-    width: 220px;
-    height: 220px;
+    width: 200px;
+    height: 200px;
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.06));
 }
 
-/* breathing container */
 .breathing {
-    animation: breathing 6s ease-in-out infinite;
+    animation: breathing 4s ease-in-out infinite;
 }
 
-/* SVG */
 .progress-ring {
     transform: rotate(-90deg);
 }
 
 .progress-ring circle {
     fill: none;
-    stroke-width: 10;
+    stroke-width: 12;
 }
 
 circle.bg {
-    stroke: #e5e5e7;
+    stroke: var(--border);
 }
 
 circle.progress {
-    stroke: #111;
+    stroke: var(--primary);
     stroke-linecap: round;
-    transition: stroke-dashoffset 0.4s linear;
+    transition: stroke-dashoffset 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ========== TIME TEXT ========== */
 .time-text {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 42px;
-    font-weight: 500;
-    letter-spacing: -0.5px;
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: var(--text);
 }
 
-/* ========== ACTIONS ========== */
+/* ========== Buttons ========== */
 .actions {
-    margin-top: 28px;
-    display: flex;
-    gap: 12px;
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    width: 100%;
+    max-width: 320px;
 }
 
 .actions button {
-    padding: 8px 16px;
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    background: #fff;
-    color: #111;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .actions button:hover:not(:disabled) {
-    background: #111;
-    color: #fff;
-    border-color: #111;
+    background: var(--primary-light, #f0f7ff);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.actions button:disabled {
-    opacity: 0.35;
+#done {
+    grid-column: span 2;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-size: 16px;
+    padding: 16px;
+}
+
+#done:hover:not(:disabled) {
+    background: hsl(210, 100%, 45%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 102, 255, 0.2);
+}
+
+#done:disabled {
+    opacity: 0.3;
     cursor: not-allowed;
+    background: var(--text-muted);
 }
 
-/* ========== BREATHING ANIMATION ========== */
+/* ========== Animations ========== */
 @keyframes breathing {
-    0% {
-        transform: scale(0.96);
-        opacity: 0.85;
+
+    0%,
+    100% {
+        transform: scale(1);
     }
 
     50% {
-        transform: scale(1);
-        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+body {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
 
-    100% {
-        transform: scale(0.96);
-        opacity: 0.85;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

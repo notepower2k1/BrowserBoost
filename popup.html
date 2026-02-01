@@ -7,38 +7,43 @@
     <link rel="stylesheet" href="popup.css">
     <link rel="stylesheet" href="features/bookmark/bookmark.css">
     <link rel="stylesheet" href="features/tab/tab.css">
+    <link rel="stylesheet" href="features/clipboard/clipboard.css">
     <title>Helper Browser Tool</title>
 </head>
 
 <body>
     <div id="support-btn">
-        <button class="btn" id="openNoteBtn" title="Mở Note">
+        <button class="btn" id="openNoteBtn" title="Open sidebar Note">
             <i class="fa-solid fa-book-open"></i>
         </button>
-        <button class="btn" id="openRecorderBtn" title="Quay màn hình">
+        <button class="btn" id="openRecorderBtn" title="Screen Recorder">
             <i class="fa-solid fa-record-vinyl"></i>
         </button>
-        <button class="btn" id="addStickyBtn" title="Thêm Sticky Note">
+        <button class="btn" id="addStickyBtn" title="Sticky Note">
             <i class="fa-solid fa-note-sticky"></i>
         </button>
     </div>
     <hr>
     <div id="tab-bar">
-        <button class="tab-btn" data-tab="tabmanager">
+        <button class="tab-btn" data-tab="tabmanager" title="Manage your open tabs and groups">
             <i class="fa-solid fa-folder-open"></i>
-            <span>Tab</span>
+            <span>Tabs</span>
         </button>
-        <button class="tab-btn" data-tab="bookmark">
+        <button class="tab-btn" data-tab="bookmark" title="Quickly access and organize bookmarks">
             <i class="fa-solid fa-bookmark"></i>
-            <span>Bookmark</span>
+            <span>Bookmarks</span>
         </button>
-        <button class="tab-btn" data-tab="water">
+        <button class="tab-btn" data-tab="water" title="Track your daily water intake">
             <i class="fa-solid fa-droplet"></i>
             <span>Water</span>
         </button>
-        <button class="tab-btn" data-tab="eye-relax">
+        <button class="tab-btn" data-tab="eye-relax" title="Manage eye rest and relaxation intervals">
             <i class="fa-solid fa-eye"></i>
             <span>Relax</span>
+        </button>
+        <button class="tab-btn" data-tab="clipboard" title="View and manage your clipboard history">
+            <i class="fa-solid fa-paste"></i>
+            <span>Clipboard</span>
         </button>
     </div>
     <div id="tab-contents">
@@ -49,6 +54,8 @@
         <div class="tab-content hidden" id="water-container">
         </div>
         <div class="tab-content hidden" id="eye-relax-container">
+        </div>
+        <div class="tab-content hidden" id="clipboard-container">
         </div>
     </div>
 

@@ -14,7 +14,8 @@
         "alarms",
         "notifications",
         "downloads",
-        "bookmarks"
+        "bookmarks",
+        "unlimitedStorage"
     ],
     "content_scripts": [
         {
@@ -22,6 +23,7 @@
                 "<all_urls>"
             ],
             "js": [
+                "features/clipboard/clipboard-content.js",
                 "features/sticky-note/sticky-note.js",
                 "features/record/record-script.js"
             ],
@@ -29,7 +31,7 @@
                 "features/sticky-note/sticky-note.css",
                 "features/record/record-widget.css"
             ]
-        }  
+        }
     ],
     "host_permissions": [
         "*://*/*"

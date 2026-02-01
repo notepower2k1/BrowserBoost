@@ -31,16 +31,18 @@
         el.innerHTML = `
             <div class="sticky-note-header">
                 <div class="format-toolbar">
-                    <button data-cmd="bold"><b>B</b></button>
-                    <button data-cmd="italic"><i>I</i></button>
-                    <button data-cmd="underline"><u>U</u></button>
-                    <button data-cmd="strikeThrough"><s>S</s></button>
-                    <button class="font-dec">A−</button>
-                    <button class="font-inc">A+</button>
+                    <button data-cmd="bold" title="Bold"><b>B</b></button>
+                    <button data-cmd="italic" title="Italic"><i>I</i></button>
+                    <button data-cmd="underline" title="Underline"><u>U</u></button>
+                    <button data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
+                    <button class="font-dec" title="Decrease size">A−</button>
+                    <button class="font-inc" title="Increase size">A+</button>
                 </div>
-                <button class="toggle-btn" title="Thu nhỏ/Mở rộng">${note.collapsed ? '□' : '−'}</button>
-                <button class="add-btn">＋</button>
-                <button class="delete-btn">×</button>
+                <div class="sticky-note-actions">
+                    <button class="toggle-btn" title="Collapse/Expand">${note.collapsed ? '□' : '−'}</button>
+                    <button class="add-btn" title="New Note">＋</button>
+                    <button class="delete-btn" title="Delete Note">×</button>
+                </div>
             </div>
             <div class="sticky-note-body" contenteditable="true">
                 ${note.content || ""}

@@ -9,9 +9,10 @@ let selectedWindowId = 'all';
 let activeDeleteGroupId = null;
 
 // Tạo HTML cho một group (header + tab-list placeholder + actions)
-function createGroupBox({ id, title, color = "#ccc", count = 0, viewMode = "grid" }) {
+function createGroupBox({ id, title, color = "#eee", count = 0, viewMode = "grid" }) {
     const box = document.createElement("div");
-    box.className = (viewMode === "list") ? "group-box list-mode" : "group-box";
+    box.className = "group-box";
+    if (viewMode === "list") box.classList.add("list-mode");
     box.dataset.id = id;
 
     // Disable delete/edit cho group-1
@@ -179,7 +180,8 @@ async function renderTabGroup() {
             favicon: groupInfo.favIconUrl
         });
 
-        container.appendChild(box);           // append trước khi render list
+        // CSS will handle grid/list display modes automatically
+        container.appendChild(box);
         renderTabList(groupTabs, box, viewMode);
     }
 
@@ -188,7 +190,7 @@ async function renderTabGroup() {
         const box = createGroupBox({
             id: "ungrouped",
             title: "Ungrouped",
-            color: "#ccc",
+            color: "#f0f2f5",
             count: ungrouped.length,
             viewMode
         });
@@ -196,68 +198,12 @@ async function renderTabGroup() {
         renderTabList(ungrouped, box, viewMode);
     }
 
-    // GRID MODE → AUTO SIZE
-    if (viewMode === "grid") {
-        autoResizeGroupsAll();
-    } else {
-        // LIST MODE → FULL AUTO HEIGHT
-        document.querySelectorAll(".group-box").forEach(b => {
-            b.style.height = "auto";
-        });
-    }
-
     attachGroupEvents();
     enableTabDrag();
 }
 
-function autoResizeGroupsAll() {
-    document.querySelectorAll("#tabmanager-container .group-box").forEach(box => {
-        autoResizeGroups(box);
-    });
-}
+// Manual resize logic is no longer needed with modern CSS layout
 
-function autoResizeGroups(box) {
-    const header = box.querySelector(".group-header");
-    const list = box.querySelector(".tab-list");
-    const actions = box.querySelector(".actions");
-    const items = list.querySelectorAll(".tab-item").length;
-
-    list.getBoundingClientRect(); // force reflow
-
-    if (!header || !list || !actions) return;
-
-    if (items === 0) {
-        box.style.width = "300px";
-        return;
-    }
-
-    const itemSize = 36 + 8; // icon + gap
-    const maxRowItems = 5;
-
-    // width mới theo số item tối đa 5 mỗi dòng
-    const width = Math.min(maxRowItems, items) * itemSize + 20;
-    box.style.width = width + "px";
-
-    // 💡 FORCE BROWSER REFLOW để cập nhật offsetHeight
-    void box.offsetHeight;
-
-    // Bây giờ offsetHeight mới đúng
-    const headerH = header.offsetHeight;
-    const listH = list.offsetHeight;
-    const actionsH = actions.offsetHeight;
-
-    const style = getComputedStyle(box);
-    const paddingTop = parseInt(style.paddingTop);
-    const paddingBottom = parseInt(style.paddingBottom);
-    const borderTop = parseInt(style.borderTopWidth);
-    const borderBottom = parseInt(style.borderBottomWidth);
-
-    const totalPadding = paddingTop + paddingBottom + borderTop + borderBottom;
-
-    const totalHeight = headerH + listH + actionsH + totalPadding + 8;
-
-    box.style.height = totalHeight + "px";
-}
 
 function openEditGroupModal(groupId, oldName, oldColor) {
     currentEditGroupId = groupId;
@@ -285,13 +231,12 @@ function openEditGroupModal(groupId, oldName, oldColor) {
 
 async function addNewTabToGroup(groupId, url = "chrome://newtab/") {
     groupId = Number(groupId);
+    const windowId = getActiveWindowId();
+    const createParams = { url, active: false };
+    if (windowId) createParams.windowId = windowId;
 
     // 1. Tạo tab mới
-    const newTab = await chrome.tabs.create({
-        windowId: getActiveWindowId(),
-        url: url,
-        active: false
-    });
+    const newTab = await chrome.tabs.create(createParams);
 
     // 2. Chờ tab được Chrome gán đầy đủ thông tin (quan trọng)
     await new Promise(resolve => setTimeout(resolve, 120));
@@ -369,16 +314,11 @@ function attachGroupEvents() {
                 }
 
                 // ===== XÓA TAB =====
-                const windowId = getActiveWindowId();
-                if (!windowId) return;
+                const tabIdsToDelete = [...selectedForDelete[groupId]];
 
-                const tabsInWindow = await chrome.tabs.query({ windowId, });
-                const validIds = new Set(tabsInWindow.map(t => t.id));
-
-                const tabIdsToDelete = [...selectedForDelete[groupId]]
-                    .filter(id => validIds.has(id));
-
-                await chrome.tabs.remove(tabIdsToDelete);
+                if (tabIdsToDelete.length > 0) {
+                    await chrome.tabs.remove(tabIdsToDelete);
+                }
 
                 exitDeleteMode(groupId);
 
@@ -396,9 +336,12 @@ function attachGroupEvents() {
                 const box = btn.closest(".group-box");
                 const groupId = box.dataset.id === "ungrouped" ? null : Number(box.dataset.id);
 
-                if (groupId === null) {
+                if (groupId === null || groupId === "ungrouped") {
                     // ungrouped → chỉ tạo tab mới
-                    await chrome.tabs.create({ windowId: getActiveWindowId(), url: "chrome://newtab/", active: false });
+                    const windowId = getActiveWindowId();
+                    const createParams = { url: "chrome://newtab/", active: false };
+                    if (windowId) createParams.windowId = windowId;
+                    await chrome.tabs.create(createParams);
                 } else {
                     // tạo tab mới rồi đưa vào group
                     await addNewTabToGroup(groupId);
@@ -472,14 +415,13 @@ function enableTabDrag() {
 }
 
 function highlightTabItems(keyword) {
-    const items = document.querySelectorAll(".group-box .tab-item");
+    const items = document.querySelectorAll("#tabmanager-container .tab-item");
     const lower = keyword.trim().toLowerCase();
 
     items.forEach(item => {
         const title = item.dataset.title?.toLowerCase() || "";
 
         if (!lower) {
-            // reset highlight
             item.classList.remove("highlight");
             return;
         }
@@ -697,8 +639,13 @@ export async function initTabManager() {
         });
     });
 
-    // Gắn sự kiện input
-    document.querySelector("#tabmanager-container #toolbar #search-web").addEventListener("input", debounce(handleSearchWebInput, 500));
+    // Gắn sự kiện input cho search
+    const searchInput = document.querySelector("#tabmanager-container #search-web");
+    if (searchInput) {
+        searchInput.addEventListener("input", debounce((e) => {
+            highlightTabItems(e.target.value);
+        }, 300));
+    }
 
     // Khi click "Add group" → mở modal edit, nhưng để tạo group mới
     document.querySelector("#tabmanager-container #toolbar #open-add-group-modal").onclick = () => {

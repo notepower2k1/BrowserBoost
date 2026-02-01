@@ -3,27 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Water Reminder Settings</title>
     <link rel="stylesheet" href="water-settings.css">
 </head>
 
 <body>
-    <!-- features/water-reminder/water-settings.html -->
     <div class="settings-root">
+        <h1>Water Settings 💧</h1>
+
         <div class="card">
             <div class="row">
                 <label>Daily Goal (ml)</label>
-                <input id="dailyGoal" type="number" min="200" />
+                <input id="dailyGoal" type="number" min="200" step="50" placeholder="e.g. 2000" />
             </div>
             <div class="row">
-                <label>Every minutes</label>
-                <input id="interval-minutes" type="number" min="5" value="60" />
+                <label>Reminder Interval (minutes)</label>
+                <input id="interval-minutes" type="number" min="5" step="5" />
             </div>
         </div>
 
-        <button id="save-settings" class="btn-primary" style="margin-top:12px;">Save Reminder Settings</button>
-        <script type="module" src="water-settings.js"></script>
+        <button id="save-settings" class="btn-primary">Save Preferences</button>
+
+        <p style="text-align: center; font-size: 12px; color: var(--text-muted);">
+            Changes will take effect immediately.
+        </p>
     </div>
+
+    <script type="module" src="water-settings.js"></script>
 </body>
 
 </html>

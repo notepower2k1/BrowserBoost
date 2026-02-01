@@ -101,17 +101,17 @@ async function initAlarmCard() {
                     const li = document.createElement("li");
 
                     li.innerHTML = `
-                    <div>
-                        <strong>${formatAlarmName}</strong>
+                    <div class="alarm-info">
+                        <span class="alarm-name">${formatAlarmName}</span>
                         <div class="alarm-time">
-                            ${alarm.scheduledTime ? formatTime(alarm.scheduledTime) : "Repeating"}
+                            <i class="fa-regular fa-clock"></i> ${alarm.scheduledTime ? formatTime(alarm.scheduledTime) : "Repeating"}
                         </div>
                     </div>
-                    <button class="clear-btn">Clear</button>
+                    <button class="clear-btn" tooltip="Delete this alarm">Clear</button>
                 `;
 
-                    li.querySelector(".clear-btn").onclick = () => {                        
-                        chrome.alarms.clear(alarm.name, async () => {                            
+                    li.querySelector(".clear-btn").onclick = () => {
+                        chrome.alarms.clear(alarm.name, async () => {
                             if (alarm.name === ALARMS.EYE) {
                                 const currentSetting = await getLocalStorage("eyeRelax") || {};
                                 currentSetting.enabled = false;

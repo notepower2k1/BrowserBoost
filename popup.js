@@ -21,9 +21,18 @@ async function restoreLastTab() {
     const activeTab = settings.activePopupTab || "tabmanager";
 
     // show content
-    contents.forEach(c => c.classList.add("hidden"));
-    document.getElementById(activeTab + "-container")?.classList.remove("hidden");
-    document.getElementById(activeTab + "-container")?.classList.add("active");
+    contents.forEach(c => {
+        c.classList.add("hidden");
+        c.classList.remove("active");
+    });
+
+    const targetEl = document.getElementById(activeTab + "-container");
+    if (targetEl) {
+        targetEl.classList.remove("hidden");
+        // Force reflow to ensure animation triggers
+        void targetEl.offsetWidth;
+        targetEl.classList.add("active");
+    }
 
     // highlight tab
     tabs.forEach(t => t.classList.remove("active"));
@@ -63,6 +72,12 @@ async function loadModule(target) {
         const module = await import('./features/eye-relax/eye-settings.js');
         module.initEyeRelax();
         window.eyeLoaded = true;
+    }
+
+    if (target === "clipboard" && !window.clipboardLoaded) {
+        const module = await import('./features/clipboard/clipboard.js');
+        module.initClipboard();
+        window.clipboardLoaded = true;
     }
 }
 

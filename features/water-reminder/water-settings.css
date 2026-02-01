@@ -1,243 +1,114 @@
-/* features/water-reminder/water-settings.css - UPDATED */
+/* Modern Water Settings Styles */
+:root {
+    --primary: hsl(210, 100%, 50%);
+    --primary-hover: hsl(210, 100%, 45%);
+    --primary-light: hsl(210, 100%, 96%);
+    --bg: hsl(210, 30%, 98%);
+    --surface: hsl(0, 0%, 100%);
+    --text: hsl(210, 40%, 10%);
+    --text-muted: hsl(210, 20%, 45%);
+    --border: hsl(210, 20%, 90%);
+    --radius-md: 12px;
+    --radius-lg: 18px;
+}
 
-/* Background gradient và căn giữa */
 body {
     margin: 0;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: Inter, system-ui, Roboto, Arial;
-    background: linear-gradient(135deg, #4db6ff, #3b9dff);
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
 }
 
-/* Card chính chứa toàn bộ settings */
 .settings-root {
-    width: 700px;
-    max-width: 90%;
-    padding: 24px 28px;
-    background: #f7fbff;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    color: #073044;
+    width: 400px;
+    padding: 32px;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    text-align: center;
+    color: var(--text);
+}
+
+.card {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-
-.back-btn:hover {
-    text-decoration: underline;
-}
-
-/* Labels */
-.settings-root label {
-    font-size: 13px;
-    color: #034;
-}
-
-/* Inputs */
-.settings-root input[type="number"],
-.settings-root select,
-.settings-root input[type="time"] {
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid #cfe3ef;
-    font-size: 13px;
-    background: #fff;
-}
-
-/* Small buttons */
-.btn-small {
-    padding: 6px 10px;
-    border-radius: 8px;
-    background: linear-gradient(180deg, #e3e6eb, #d3d6db);
-    border: 1px solid #c7ccd0;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.btn-small.ghost {
-    background: transparent;
-    border: 1px dashed #d3d6db;
-}
-
-/* Schedule list items */
-.schedule-list {
-    margin-top: 8px;
+.row {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* Recommended water */
-.rec {
-    margin: 10px 0 12px 0;
+label {
+    font-size: 14px;
     font-weight: 700;
-    font-size: 15px;
-    color: #054;
-    border-left: 3px solid #0a6ebb;
-    padding-left: 6px;
+    color: var(--text-muted);
 }
 
-/* Time item */
-.time-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #ffffff;
-    border: 1px solid #e6eef7;
-    padding: 8px;
-    border-radius: 8px;
-}
-
-.time-item input[type="time"] {
-    width: 110px;
-    padding: 6px 8px;
-    border-radius: 6px;
-    border: 1px solid #cfe3ef;
-}
-
-.time-item .remove-time {
-    padding: 6px 8px;
-    background: #f0baba;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 700;
-}
-
-.muted {
-    color: #667;
-    font-size: 13px;
-}
-
-/* Primary save button */
-.btn-primary {
+input[type="number"] {
     width: 100%;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #4db6ff, #3b9dff);
-    color: #fff;
-    border: none;
-    font-weight: 800;
+    padding: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
     font-size: 15px;
-}
-
-/* Card nội dung reminder */
-.card {
-    background: #e6f0ff;
-    padding: 16px;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* Reminder row */
-.reminder-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-
-.row,
-.reminder-row,
-.inline-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-.row label {
-    flex: 1;
-    font-size: 13px;
-    color: #034;
     font-weight: 600;
+    background: var(--bg);
+    transition: all 0.2s;
 }
 
-/* Inputs */
-.row input,
-.row select {
-    flex: 1;
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid #cbe3fb;
-    background: #fff;
-    transition: 0.2s;
-}
-
-.row input:focus,
-.row select:focus {
+input[type="number"]:focus {
     outline: none;
-    border-color: #79b6ff;
-    box-shadow: 0 0 0 2px rgba(121, 182, 255, 0.3);
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 4px var(--primary-light);
 }
 
-.inline-row {
-    gap: 10px;
-}
-
-.radio-inline {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 0 0 auto;
-}
-
-/* primary save */
 .btn-primary {
     width: 100%;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: linear-gradient(180deg, #4db6ff, #3b9dff);
-    color: #fff;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: white;
     border: none;
     font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-/* toggle switch */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 46px;
-    height: 24px;
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px hsla(210, 100%, 50%, 0.25);
 }
 
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+.btn-primary:active {
+    transform: translateY(0);
 }
 
-.slider {
-    position: absolute;
-    inset: 0;
-    background: #c7d4dd;
-    border-radius: 34px;
-    transition: .25s;
+.back-link {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-top: 8px;
 }
 
-.slider:before {
-    content: "";
-    position: absolute;
-    left: 3px;
-    bottom: 3px;
-    width: 18px;
-    height: 18px;
-    background: #fff;
-    border-radius: 50%;
-    transition: .25s;
-}
-
-.switch input:checked+.slider {
-    background: #4db6ff;
-}
-
-.switch input:checked+.slider:before {
-    transform: translateX(22px);
+.back-link:hover {
+    color: var(--primary);
 }

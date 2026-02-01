@@ -1,34 +1,46 @@
-<!-- Reminder Mode (replace current Reminder block) -->
-<h3>Reminder Mode 🕐</h3>
-<div class="card">
-    <!-- ON/OFF -->
-    <div class="reminder-row">
-        <span>Reminder</span>
-        <label class="switch">
-            <input type="checkbox" id="er-enabled">
-            <span class="slider"></span>
-        </label>
+<div class="er-settings">
+    <h3>Reminder Mode <i class="fa-solid fa-clock"></i></h3>
+    <div class="card">
+        <!-- ON/OFF -->
+        <div class="reminder-row">
+            <span class="reminder-label">Reminder</span>
+            <label class="switch">
+                <input type="checkbox" id="er-enabled">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="row">
+            <label>Relax interval</label>
+            <div class="input-group">
+                <input type="number" id="er-interval" min="1" step="1" />
+                <span class="unit">minutes</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <label>Break duration</label>
+            <div class="input-group">
+                <input type="number" id="er-duration" min="20" step="1" />
+                <span class="unit">seconds</span>
+            </div>
+        </div>
+
+        <button id="er-save" class="btn-primary" tooltip="Save your preferences">Save Settings</button>
     </div>
 
-    <div class="row">
-        <label>Relax every</label>
-        <input type="number" id="er-interval" min="1" /> minutes
-    </div>
+    <h3>Upcoming alarms <i class="fa-solid fa-bell"></i></h3>
 
-    <div class="row">
-        <label>Relax time</label>
-        <input type="number" id="er-duration" min="20" /> seconds
-    </div>
-    <button id="er-save" class="btn-primary">Save setting</button>
-</div>
+    <div class="card" id="alarmCard">
+        <ul id="alarmList"></ul>
 
-<h3>Upcoming alarms ⏰</h3>
-
-<div class="card" id="alarmCard">
-    <ul id="alarmList"></ul>
-
-    <div class="row">
-        <button id="refreshAll" class="btn-primary">Refresh all alarms</button>
-        <button id="clearAll" class="btn-primary">Clear all alarms</button>
+        <div class="modal-buttons">
+            <button id="refreshAll" tooltip="Update alarm list">
+                <i class="fa-solid fa-rotate"></i> Refresh
+            </button>
+            <button id="clearAll" class="delete" tooltip="Remove all alarms">
+                <i class="fa-solid fa-trash-can"></i> Clear All
+            </button>
+        </div>
     </div>
 </div>

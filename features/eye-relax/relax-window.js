@@ -3,7 +3,7 @@ const text = document.getElementById("timeText");
 const doneBtn = document.getElementById("done");
 const ringWrapper = document.querySelector(".ring-wrapper");
 const circle = document.querySelector(".progress");
-const radius = 96;
+const radius = 88;
 const circumference = 2 * Math.PI * radius;
 
 circle.style.strokeDasharray = circumference;
@@ -13,7 +13,6 @@ doneBtn.disabled = true;
 
 let TOTAL_SECONDS = 20; // default
 let remaining = TOTAL_SECONDS;
-let actionSent = false;
 
 // ------------------- LOAD SETTINGS -------------------
 async function init() {
@@ -56,6 +55,9 @@ function startTimer() {
 
             text.textContent = "Done";
             doneBtn.disabled = false;
+
+            // Auto play a subtle sound if needed or highlight
+            doneBtn.classList.add('pulse');
             return;
         }
 
@@ -64,29 +66,24 @@ function startTimer() {
     }, 1000);
 }
 
-function sendOnce(msg) {
-    if (actionSent) return;
-    actionSent = true;
-    console.log('sendOnce', msg);
-    return new Promise(resolve => {
-        chrome.runtime.sendMessage(msg, () => resolve());
-    });
-}
-
 // ------------------- BUTTONS -------------------
-document.getElementById("snooze5").onclick = async () => {
-    await sendOnce({ action: "eye-snooze", minutes: 5 });
-    window.close();
-};
+document.getElementById("snooze5").addEventListener('click', () => {
+    chrome.runtime.sendMessage({ action: "eye-snooze", minutes: 5 }, () => {
+        window.close();
+    });
+});
 
-document.getElementById("snooze10").onclick = async () => {
-    await sendOnce({ action: "eye-snooze", minutes: 10 });
-    window.close();
-};
+document.getElementById("snooze10").addEventListener('click', () => {
+    chrome.runtime.sendMessage({ action: "eye-snooze", minutes: 10 }, () => {
+        window.close();
+    });
+});
 
-doneBtn.onclick = async () => {
-    await sendOnce({ action: "update-eye-relax" });
-    window.close();
-};
+doneBtn.addEventListener('click', () => {
+    chrome.runtime.sendMessage({ action: "update-eye-relax" }, () => {
+        window.close();
+    });
+});
+
 // ------------------- START -------------------
 init();
