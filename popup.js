@@ -80,7 +80,7 @@ tabs.forEach(tab => {
 
         const targetEl = document.getElementById(target + "-container");
         console.log(targetEl);
-        
+
         targetEl.classList.remove("hidden");
 
         void targetEl.offsetWidth;
@@ -119,6 +119,25 @@ document.querySelector("#openRecorderBtn").addEventListener("click", async () =>
     };
 
     chrome.tabs.sendMessage(tab.id, { action: "open-record-widget" });
+});
+
+/* ===============================
+   Sticky Note
+================================ */
+document.querySelector("#addStickyBtn").addEventListener("click", async () => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+    if (BLOCKED_HOSTS.some(host => tab.url.includes(host))) {
+        alert('You can not use sticky notes on this website!');
+        return;
+    };
+
+    try {
+        await chrome.tabs.sendMessage(tab.id, { action: "create-sticky-note" });
+    } catch (e) {
+        console.error("Error sending message:", e);
+        alert('You can not use sticky notes on this page! Please refresh and try again.');
+    }
 });
 
 /* ===============================

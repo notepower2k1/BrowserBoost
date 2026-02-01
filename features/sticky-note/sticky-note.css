@@ -14,6 +14,23 @@
     display: flex;
     flex-direction: column;
     /* Cho phép body fill toàn bộ */
+    transition: height 0.2s ease;
+}
+
+.sticky-note.collapsed {
+    height: auto !important;
+    min-height: 0 !important;
+    resize: none;
+}
+
+.sticky-note.collapsed .sticky-note-body,
+.sticky-note.collapsed .format-toolbar {
+    display: none;
+}
+
+.sticky-note.collapsed .sticky-note-header {
+    border-bottom: none;
+    border-radius: 6px;
 }
 
 /* Header */

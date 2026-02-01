@@ -38,6 +38,7 @@
                     <button class="font-dec">A−</button>
                     <button class="font-inc">A+</button>
                 </div>
+                <button class="toggle-btn" title="Thu nhỏ/Mở rộng">${note.collapsed ? '□' : '−'}</button>
                 <button class="add-btn">＋</button>
                 <button class="delete-btn">×</button>
             </div>
@@ -46,9 +47,26 @@
             </div>
         `;
 
+        if (note.collapsed) {
+            el.classList.add('collapsed');
+        }
+
         document.body.appendChild(el);
 
         const body = el.querySelector('.sticky-note-body');
+        const toggleBtn = el.querySelector('.toggle-btn');
+
+        toggleBtn.addEventListener('click', () => {
+            el.classList.toggle('collapsed');
+            const isCollapsed = el.classList.contains('collapsed');
+            toggleBtn.textContent = isCollapsed ? '□' : '−';
+
+            const i = notes.findIndex(n => n.id === note.id);
+            if (i !== -1) {
+                notes[i].collapsed = isCollapsed;
+                saveNotes();
+            }
+        });
         el.querySelectorAll('[data-cmd]').forEach(btn => {
             btn.addEventListener('click', () => {
                 body.focus();
