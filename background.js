@@ -23,6 +23,12 @@ chrome.runtime.onInstalled.addListener(() => {
         title: "Save Image to Helper Clipboard",
         contexts: ["image"]
     });
+
+    chrome.contextMenus.create({
+        id: "saveClipboard",
+        title: "Save selection to Helper Clipboard",
+        contexts: ["selection"]
+    });
 });
 
 
@@ -50,6 +56,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
     if (info.menuItemId === "saveImage") {
         await handleSaveImage(info, tab);
+    }
+
+    if (info.menuItemId === "saveClipboard") {
+        await handleSaveClipboard(info, tab);
     }
 });
 
@@ -185,31 +195,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
         /* -------- Clipboard Manager -------- */
         if (msg.action === "save-clipboard") {
-            const { type, text, image, url, title, timestamp } = msg;
-            try {
-                const res = await chrome.storage.local.get("clipboardHistory");
-                let history = res.clipboardHistory || [];
-
-                // Skip if same as last entry (only for text)
-                if (type === 'text' && history.length > 0 && history[0].text === text) return;
-
-                // Add to start
-                history.unshift({
-                    type: type || 'text',
-                    text,
-                    image,
-                    url,
-                    title,
-                    timestamp
-                });
-
-                // Limit to 50
-                if (history.length > 50) history = history.slice(0, 50);
-
-                await chrome.storage.local.set({ clipboardHistory: history });
-            } catch (err) {
-                console.error("Storage error:", err);
-            }
+            await addToClipboardHistory(msg);
         }
     };
 
@@ -263,10 +249,7 @@ async function handleSaveImage(info, tab) {
             srcUrl: info.srcUrl
         }, async (response) => {
             if (response && response.dataUrl) {
-                const res = await chrome.storage.local.get("clipboardHistory");
-                let history = res.clipboardHistory || [];
-
-                history.unshift({
+                await addToClipboardHistory({
                     type: 'image',
                     text: '[Image] Saved via Context Menu',
                     image: response.dataUrl,
@@ -274,9 +257,6 @@ async function handleSaveImage(info, tab) {
                     title: tab.title || 'Context Menu Capture',
                     timestamp: Date.now()
                 });
-
-                if (history.length > 50) history = history.slice(0, 50);
-                await chrome.storage.local.set({ clipboardHistory: history });
 
                 // Show visual feedback
                 chrome.notifications.create("img-save-" + Date.now(), {
@@ -289,5 +269,54 @@ async function handleSaveImage(info, tab) {
         });
     } catch (err) {
         console.error("Failed to save image:", err);
+    }
+}
+
+async function handleSaveClipboard(info, tab) {
+    const text = info.selectionText?.trim();
+    if (!text) return;
+
+    await addToClipboardHistory({
+        type: 'text',
+        text,
+        url: info.pageUrl || tab.url,
+        title: tab.title || 'Saved Selection',
+        timestamp: Date.now()
+    });
+
+    // Visual feedback
+    chrome.notifications.create("clip-save-" + Date.now(), {
+        type: "basic",
+        iconUrl: "icon-48x48.png",
+        title: "Selection Saved",
+        message: "The selected text has been added to your clipboard history."
+    });
+}
+
+async function addToClipboardHistory(data) {
+    const { type, text, image, url, title, timestamp } = data;
+    try {
+        const res = await chrome.storage.local.get("clipboardHistory");
+        let history = res.clipboardHistory || [];
+
+        // Skip if same as last entry (only for text)
+        if (type === 'text' && history.length > 0 && history[0].text === text) return;
+
+        // Add to start
+        history.unshift({
+            type: type || 'text',
+            text,
+            image,
+            url,
+            title,
+            timestamp: timestamp || Date.now()
+        });
+
+        // Limit to 50
+        if (history.length > 50) history = history.slice(0, 50);
+
+        await chrome.storage.local.set({ clipboardHistory: history });
+    } catch (err) {
+        console.error("Storage error:", err);
     }
 }

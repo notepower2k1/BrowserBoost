@@ -47,6 +47,11 @@
             <div class="sticky-note-body" contenteditable="true">
                 ${note.content || ""}
             </div>
+            <div class="sticky-note-footer">
+                <div class="drag-handle-bottom" title="Click and drag to move">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
         `;
 
         if (note.collapsed) {
@@ -102,9 +107,11 @@
 
         // Delete note button
         el.querySelector('.delete-btn').addEventListener('click', () => {
-            notes = notes.filter(n => n.id !== note.id);
-            saveNotes();
-            el.remove();
+            if (window.confirm('Do you want to delete this note?')) {
+                notes = notes.filter(n => n.id !== note.id);
+                saveNotes();
+                el.remove();
+            }
         });
 
         // Drag
@@ -112,6 +119,8 @@
 
         // Resize Observer để theo dõi người dùng resize
         const ro = new ResizeObserver(() => {
+            if (el.classList.contains('collapsed')) return; // Không lưu size khi đang minimize
+
             const i = notes.findIndex(n => n.id === note.id);
             if (i !== -1) {
                 notes[i].width = el.offsetWidth;
@@ -151,35 +160,51 @@
 
 
     function enableDrag(el, id) {
-        const header = el.querySelector('.sticky-note-header');
+        const handles = el.querySelectorAll('.sticky-note-header, .sticky-note-footer');
         let startX = 0, startY = 0;
         let dragging = false;
 
-        header.addEventListener('mousedown', (e) => {
-            dragging = true;
-            startX = e.clientX - el.offsetLeft;
-            startY = e.clientY - el.offsetTop;
+        handles.forEach(handle => {
+            handle.addEventListener('mousedown', (e) => {
+                if (e.target.closest('button')) return; // Don't drag if clicking buttons
 
-            function onMove(ev) {
-                el.style.left = (ev.clientX - startX) + 'px';
-                el.style.top = (ev.clientY - startY) + 'px';
-            }
+                dragging = true;
+                startX = e.clientX - el.offsetLeft;
+                startY = e.clientY - el.offsetTop;
 
-            function onUp() {
-                dragging = false;
-                document.removeEventListener('mousemove', onMove);
-                document.removeEventListener('mouseup', onUp);
-                // Save position
-                const i = notes.findIndex(n => n.id === id);
-                if (i !== -1) {
-                    notes[i].x = el.offsetLeft;
-                    notes[i].y = el.offsetTop;
-                    saveNotes();
+                function onMove(ev) {
+                    let newX = ev.clientX - startX;
+                    let newY = ev.clientY - startY;
+
+                    // Giới hạn trong vùng nhìn thấy (viewport)
+                    const minX = window.scrollX;
+                    const minY = window.scrollY;
+                    const maxX = window.scrollX + window.innerWidth - el.offsetWidth;
+                    const maxY = window.scrollY + window.innerHeight - el.offsetHeight;
+
+                    newX = Math.max(minX, Math.min(newX, maxX));
+                    newY = Math.max(minY, Math.min(newY, maxY));
+
+                    el.style.left = newX + 'px';
+                    el.style.top = newY + 'px';
                 }
-            }
 
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('mouseup', onUp);
+                function onUp() {
+                    dragging = false;
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('mouseup', onUp);
+                    // Save position
+                    const i = notes.findIndex(n => n.id === id);
+                    if (i !== -1) {
+                        notes[i].x = el.offsetLeft;
+                        notes[i].y = el.offsetTop;
+                        saveNotes();
+                    }
+                }
+
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
+            });
         });
     }
 
@@ -211,7 +236,10 @@
     // Khởi tạo note
     function initNotes() {
         loadNotes((notes) => {
-            notes.forEach(createNoteElement);
+            // Delay render một chút để tránh giật lag khi load trang
+            setTimeout(() => {
+                notes.forEach(createNoteElement);
+            }, 500);
         });
     }
 

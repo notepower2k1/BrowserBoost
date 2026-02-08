@@ -1,4 +1,5 @@
 (function () {
+    /* 
     document.addEventListener('copy', (event) => {
         // Handle Text
         const selectedText = window.getSelection().toString().trim();
@@ -26,6 +27,7 @@
             }
         }
     }, true);
+    */
 
     // Grabbing image for context menu to avoid CORS issues in background
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {

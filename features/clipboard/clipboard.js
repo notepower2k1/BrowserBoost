@@ -24,7 +24,7 @@ async function renderClipboard() {
                     <i class="fa-solid fa-clipboard"></i>
                 </div>
                 <h3>Your clipboard is empty</h3>
-                <p>History will automatically appear here when you copy text from any website.</p>
+                <p>Dữ liệu sẽ xuất hiện ở đây khi bạn nhấn chuột phải vào văn bản và chọn <b>"Save to Helper Clipboard"</b>.</p>
             </div>
         `;
         return;

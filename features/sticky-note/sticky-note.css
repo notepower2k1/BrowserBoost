@@ -122,3 +122,38 @@
 .sticky-note-body::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.2);
 }
+
+.sticky-note-footer {
+    height: 12px;
+    background: rgba(0, 0, 0, 0.03);
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.03);
+    flex-shrink: 0;
+}
+
+.drag-handle-bottom {
+    display: flex;
+    gap: 3px;
+}
+
+.drag-handle-bottom span {
+    width: 3px;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+}
+
+.sticky-note:hover .sticky-note-footer {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.sticky-note:hover .drag-handle-bottom span {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.sticky-note.collapsed .sticky-note-footer {
+    height: 8px;
+}
