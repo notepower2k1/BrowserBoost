@@ -79,6 +79,12 @@ async function loadModule(target) {
         module.initClipboard();
         window.clipboardLoaded = true;
     }
+
+    if (target === "quick-command" && !window.quickCommandLoaded) {
+        const module = await import('./features/quick-command/quick-command.js');
+        module.initQuickCommand();
+        window.quickCommandLoaded = true;
+    }
 }
 
 /* ===============================
@@ -128,11 +134,6 @@ document.querySelector('#openNoteBtn').addEventListener('click', async () => {
 document.querySelector("#openRecorderBtn").addEventListener("click", async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    if (BLOCKED_HOSTS.some(host => tab.url.includes(host))) {
-        alert('You can not record on this website!');
-        return;
-    };
-
     chrome.tabs.sendMessage(tab.id, { action: "open-record-widget" });
 });
 
@@ -141,11 +142,6 @@ document.querySelector("#openRecorderBtn").addEventListener("click", async () =>
 ================================ */
 document.querySelector("#addStickyBtn").addEventListener("click", async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-    if (BLOCKED_HOSTS.some(host => tab.url.includes(host))) {
-        alert('You can not use sticky notes on this website!');
-        return;
-    };
 
     try {
         await chrome.tabs.sendMessage(tab.id, { action: "create-sticky-note" });

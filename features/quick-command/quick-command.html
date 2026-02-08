@@ -1,0 +1,26 @@
+<div class="quick-command-wrapper">
+    <div class="command-list-header">
+        <h2>Quick Commands</h2>
+        <div class="header-actions">
+            <button id="add-command-btn" class="action-btn" data-tooltip="Add current text">
+                <i class="fa-solid fa-plus"></i> Add
+            </button>
+            <button id="clear-all-commands" class="action-btn danger hidden" data-tooltip="Clear all commands">
+                <i class="fa-solid fa-trash-can"></i> Clear All
+            </button>
+        </div>
+    </div>
+    <div class="command-input-group">
+        <textarea id="command-input" placeholder="Type a command and press Ctrl+Enter to save..." rows="3"></textarea>
+    </div>
+    <div class="command-list-container">
+        <div id="command-list" class="clipboard-list">
+            <!-- Items will be injected here -->
+        </div>
+        <div id="empty-state" class="hidden">
+            <i class="fa-solid fa-terminal"></i>
+            <p>No commands saved yet</p>
+            <small>Right-click any text and select <b>"Save to Quick Commands"</b></small>
+        </div>
+    </div>
+</div>

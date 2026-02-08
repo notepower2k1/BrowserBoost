@@ -1,0 +1,193 @@
+/* Inheriting most styles from clipboard.css via shared classes */
+
+.quick-command-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--bg);
+}
+
+.command-input-group {
+    padding: 16px 24px;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+#command-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    background-color: var(--bg);
+    resize: vertical;
+    min-height: 80px;
+    max-height: 200px;
+    transition: all 0.2s;
+}
+
+#command-input:focus {
+    background-color: var(--surface);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+    outline: none;
+}
+
+.command-list-header {
+    /* Reuse clipboard header style but maybe modify if needed */
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.command-list-header h2 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.header-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+}
+
+/* Global utility for this module */
+.hidden {
+    display: none !important;
+}
+
+/* Updated Action Buttons */
+.action-btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    background: white;
+    border: 1px solid #ffcfcf;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.action-btn:hover {
+    background-color: #fff5f5;
+    color: #007fff;
+    border-color: #007fff;
+}
+
+.action-btn.danger:hover {
+    background-color: #fff5f5;
+    color: #e74c3c;
+    border-color: #ffcfcf;
+}
+
+/* Code Block Styling */
+.code-block {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    /* VS Code Default Dark */
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-x: auto;
+    position: relative;
+    max-height: 300px;
+}
+
+/* Ensure proper spacing in list */
+.clipboard-item {
+    gap: 8px;
+    /* Reduce gap since code block has padding */
+    padding: 16px;
+}
+
+.toast {
+    position: fixed;
+    bottom: 80px;
+    /* Above tab bar */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 2000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+/* Ensure clipboard-text preserves format */
+.clipboard-source {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+/* Center Empty State */
+#empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    color: #bdc3c7;
+    text-align: center;
+    padding: 40px;
+}
+
+#empty-state i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+#empty-state p {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 4px 0;
+    color: #95a5a6;
+}
+
+#empty-state small {
+    font-size: 12px;
+}
+
+/* Re-adding clipboard-text here as it was accidentally removed */
+.clipboard-text {
+    font-family: 'Consolas', 'Monaco', monospace;
+    /* Force monospace for commands */
+}

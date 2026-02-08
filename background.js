@@ -29,6 +29,12 @@ chrome.runtime.onInstalled.addListener(() => {
         title: "Save selection to Helper Clipboard",
         contexts: ["selection"]
     });
+
+    chrome.contextMenus.create({
+        id: "saveQuickCommand",
+        title: "Save as Quick Command",
+        contexts: ["selection"]
+    });
 });
 
 
@@ -60,6 +66,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
     if (info.menuItemId === "saveClipboard") {
         await handleSaveClipboard(info, tab);
+    }
+
+    if (info.menuItemId === "saveQuickCommand") {
+        await handleSaveQuickCommand(info, tab);
     }
 });
 
@@ -127,20 +137,14 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 ===================================================== */
 chrome.notifications.onClicked.addListener((id) => {
     if (id === "eye-relax-noti") {
-        chrome.windows.create({
-            url: chrome.runtime.getURL("features/eye-relax/relax-window.html"),
-            type: "popup",
-            width: 400,
-            height: 500
+        chrome.tabs.create({
+            url: chrome.runtime.getURL("features/eye-relax/relax-window.html")
         });
     }
 
     if (id === "water-reminder-noti") {
-        chrome.windows.create({
-            url: chrome.runtime.getURL("features/water-reminder/water-popup.html"),
-            type: "popup",
-            width: 400,
-            height: 500
+        chrome.tabs.create({
+            url: chrome.runtime.getURL("features/water-reminder/water-popup.html")
         });
     }
 });
@@ -318,5 +322,41 @@ async function addToClipboardHistory(data) {
         await chrome.storage.local.set({ clipboardHistory: history });
     } catch (err) {
         console.error("Storage error:", err);
+    }
+}
+
+async function handleSaveQuickCommand(info, tab) {
+    if (!tab.id) return;
+
+    try {
+        // Use message passing to get exact formatting
+        const response = await chrome.tabs.sendMessage(tab.id, { action: 'get-selection' });
+        const text = response && response.selection ? response.selection : info.selectionText;
+
+        if (!text) return;
+
+        const res = await chrome.storage.local.get("quickCommands");
+        let commands = res.quickCommands || [];
+
+        // Check duplicate
+        if (commands.some(c => c.text === text)) return;
+
+        commands.unshift({
+            id: Date.now().toString(),
+            text,
+            createdAt: Date.now()
+        });
+
+        await chrome.storage.local.set({ quickCommands: commands });
+
+        // Visual feedback
+        chrome.notifications.create("cmd-save-" + Date.now(), {
+            type: "basic",
+            iconUrl: "icon-48x48.png",
+            title: "Command Saved",
+            message: "Added to Quick Commands"
+        });
+    } catch (err) {
+        console.error("Quick Command Save Error:", err);
     }
 }

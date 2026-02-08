@@ -17,58 +17,80 @@ async function renderClipboard() {
     const res = await chrome.storage.local.get("clipboardHistory");
     const history = res.clipboardHistory || [];
 
+    // Load auto-save setting
+    const settings = await chrome.storage.local.get("autoSaveClipboard");
+    const isAutoSave = settings.autoSaveClipboard || false;
+
+    container.innerHTML = `
+        <div class="clipboard-header">
+            <h2>Clipboard History</h2>
+            <div class="clipboard-controls">
+                <label class="switch-label">
+                    <span>Auto Save</span>
+                    <label class="switch">
+                        <input type="checkbox" id="autoSaveToggle" ${isAutoSave ? 'checked' : ''}>
+                        <span class="slider"></span>
+                    </label>
+                </label>
+                ${history.length > 0 ? `<button id="clearClipboard" data-tooltip="Clear all history">Clear All</button>` : ''}
+            </div>
+        </div>
+    `;
+
     if (history.length === 0) {
-        container.innerHTML = `
+        container.innerHTML += `
             <div class="empty-clipboard">
                 <div class="empty-icon">
                     <i class="fa-solid fa-clipboard"></i>
                 </div>
                 <h3>Your clipboard is empty</h3>
-                <p>Dữ liệu sẽ xuất hiện ở đây khi bạn nhấn chuột phải vào văn bản và chọn <b>"Save to Helper Clipboard"</b>.</p>
+                <p>Turn on <b>Auto Save</b> or right-click text and select <b>"Save to Helper Clipboard"</b>.</p>
             </div>
         `;
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="clipboard-header">
-            <h2>Clipboard History</h2>
-            <button id="clearClipboard">Clear All</button>
-        </div>
-        <div class="clipboard-list">
-            ${history.map((item, index) => `
-                <div class="clipboard-item ${item.type === 'image' ? 'is-image' : ''}" data-index="${index}">
-                    ${item.type === 'image' ? `
-                        <div class="clipboard-image-container">
-                            <img src="${item.image}" alt="Captured Image" class="clipboard-preview-img">
-                        </div>
-                    ` : `
-                        <div class="clipboard-text">${escapeHtml(item.text)}</div>
-                    `}
-                    <div class="clipboard-meta">
-                        <a href="${item.url || '#'}" class="clipboard-source" target="_blank" title="${item.url}">
-                            <i class="fa-solid fa-link"></i> ${item.title || item.url || 'Unknown source'}
-                        </a>
-                        <div class="clipboard-actions">
-                            <button class="clipboard-btn copy-btn" data-text="${item.text.replace(/"/g, '&quot;')}" data-type="${item.type}">
-                                <i class="fa-solid fa-copy"></i> Copy
-                            </button>
-                            ${item.type === 'image' ? `
-                                <button class="clipboard-btn view-btn" data-index="${index}">
-                                    <i class="fa-solid fa-expand"></i>
+    } else {
+        container.innerHTML += `
+            <div class="clipboard-list">
+                ${history.map((item, index) => `
+                    <div class="clipboard-item ${item.type === 'image' ? 'is-image' : ''}" data-index="${index}">
+                        ${item.type === 'image' ? `
+                            <div class="clipboard-image-container">
+                                <img src="${item.image}" alt="Captured Image" class="clipboard-preview-img">
+                            </div>
+                        ` : `
+                            <div class="clipboard-text">${escapeHtml(item.text)}</div>
+                        `}
+                        <div class="clipboard-meta">
+                            <a href="${item.url || '#'}" class="clipboard-source" target="_blank" title="${item.url}">
+                                <i class="fa-solid fa-link"></i> ${item.title || item.url || 'Unknown source'}
+                            </a>
+                            <div class="clipboard-actions">
+                                <button class="clipboard-btn copy-btn" data-text="${item.text.replace(/"/g, '&quot;')}" data-type="${item.type}" tooltip="Copy text">
+                                    <i class="fa-solid fa-copy"></i> Copy
                                 </button>
-                            ` : ''}
-                            <button class="clipboard-btn delete-btn" data-index="${index}">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                                ${item.type === 'image' ? `
+                                    <button class="clipboard-btn view-btn" data-index="${index}" tooltip="View image">
+                                        <i class="fa-solid fa-expand"></i>
+                                    </button>
+                                ` : ''}
+                                <button class="clipboard-btn delete-btn" data-index="${index}" tooltip="Delete this alarm">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
+                `).join('')}
+            </div>
+        `;
+    }
 
     // Add event listeners
+    const toggle = container.querySelector('#autoSaveToggle');
+    if (toggle) {
+        toggle.addEventListener('change', async (e) => {
+            await chrome.storage.local.set({ autoSaveClipboard: e.target.checked });
+        });
+    }
+
     container.querySelector('#clearClipboard')?.addEventListener('click', async () => {
         if (confirm('Xóa toàn bộ lịch sử clipboard?')) {
             await chrome.storage.local.set({ clipboardHistory: [] });

@@ -1,33 +1,35 @@
 (function () {
-    /* 
     document.addEventListener('copy', (event) => {
-        // Handle Text
-        const selectedText = window.getSelection().toString().trim();
-        if (selectedText) {
-            sendClipboardData({ type: 'text', text: selectedText });
-        }
+        chrome.storage.local.get("autoSaveClipboard", (result) => {
+            if (!result.autoSaveClipboard) return;
 
-        // Handle Images in the clipboard data
-        if (event.clipboardData && event.clipboardData.items) {
-            for (const item of event.clipboardData.items) {
-                if (item.type.startsWith('image/')) {
-                    const blob = item.getAsFile();
-                    if (blob) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            sendClipboardData({
-                                type: 'image',
-                                image: e.target.result,
-                                text: `[Image] Captured at ${new Date().toLocaleTimeString()}`
-                            });
-                        };
-                        reader.readAsDataURL(blob);
+            // Handle Text
+            const selectedText = window.getSelection().toString().trim();
+            if (selectedText) {
+                sendClipboardData({ type: 'text', text: selectedText });
+            }
+
+            // Handle Images in the clipboard data
+            if (event.clipboardData && event.clipboardData.items) {
+                for (const item of event.clipboardData.items) {
+                    if (item.type.startsWith('image/')) {
+                        const blob = item.getAsFile();
+                        if (blob) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                sendClipboardData({
+                                    type: 'image',
+                                    image: e.target.result,
+                                    text: `[Image] Captured at ${new Date().toLocaleTimeString()}`
+                                });
+                            };
+                            reader.readAsDataURL(blob);
+                        }
                     }
                 }
             }
-        }
+        });
     }, true);
-    */
 
     // Grabbing image for context menu to avoid CORS issues in background
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -38,6 +40,10 @@
                 sendResponse({ dataUrl: null });
             });
             return true; // async callback
+        }
+
+        if (msg.action === 'get-selection') {
+            sendResponse({ selection: window.getSelection().toString() });
         }
     });
 
