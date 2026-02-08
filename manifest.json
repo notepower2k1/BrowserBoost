@@ -1,8 +1,11 @@
 {
     "manifest_version": 3,
-    "name": "Helper Browser Tool",
-    "version": "2.0",
-    "description": "Browser Helper Tool",
+    "name": "Broswer Boost",
+    "version": "3.0.0",
+    "description": "Powerful browser extension designed to optimize your web experience, boost productivity, and prioritize your digital well-being",
+    "short_name": "BrBt",
+    "author": "Thach Nguyen",
+    "homepage_url": "https://github.com/notepower2k1",
     "permissions": [
         "storage",
         "tabs",
@@ -25,11 +28,13 @@
             "js": [
                 "features/clipboard/clipboard-content.js",
                 "features/sticky-note/sticky-note.js",
-                "features/record/record-script.js"
+                "features/record/record-script.js",
+                "features/color-picker/color-picker.js"
             ],
             "css": [
                 "features/sticky-note/sticky-note.css",
-                "features/record/record-widget.css"
+                "features/record/record-widget.css",
+                "features/color-picker/color-picker.css"
             ]
         }
     ],
@@ -40,18 +45,20 @@
         "default_path": "features/note/note-sidebar.html"
     },
     "icons": {
-        "48": "icon-48x48.png",
-        "72": "icon-72x72.png",
-        "96": "icon-72x72.png",
-        "128": "icon-128x128.png"
+        "16": "icon16.png",
+        "19": "icon19.png",
+        "32": "icon32.png",
+        "38": "icon38.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
     },
     "action": {
         "default_popup": "popup.html",
         "default_icon": {
-            "48": "icon-48x48.png",
-            "72": "icon-72x72.png"
+            "48": "icon48.png",
+            "128": "icon128.png"
         },
-        "default_title": "Browser Helper Tool"
+        "default_title": "Browser Boost"
     },
     "background": {
         "service_worker": "background.js"

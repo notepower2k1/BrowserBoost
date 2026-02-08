@@ -132,9 +132,14 @@ document.querySelector('#openNoteBtn').addEventListener('click', async () => {
    Recorder
 ================================ */
 document.querySelector("#openRecorderBtn").addEventListener("click", async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    chrome.tabs.sendMessage(tab.id, { action: "open-record-widget" });
+        chrome.tabs.sendMessage(tab.id, { action: "open-record-widget" });
+    } catch (e) {
+        console.error("Error sending message:", e);
+        alert('You can not use recorder on this page! Please refresh and try again.');
+    }
 });
 
 /* ===============================
@@ -148,6 +153,19 @@ document.querySelector("#addStickyBtn").addEventListener("click", async () => {
     } catch (e) {
         console.error("Error sending message:", e);
         alert('You can not use sticky notes on this page! Please refresh and try again.');
+    }
+});
+
+/* ===============================
+   Color Picker
+   ================================ */
+document.querySelector("#openColorPickerBtn").addEventListener("click", async () => {
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        await chrome.tabs.sendMessage(tab.id, { action: "open-color-picker" });
+    } catch (e) {
+        console.error("Error opening color picker:", e);
+        alert('Cannot open color picker on this page. Please refresh and try again.');
     }
 });
 
