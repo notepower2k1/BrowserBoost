@@ -8,23 +8,30 @@
     <link rel="stylesheet" href="features/bookmark/bookmark.css">
     <link rel="stylesheet" href="features/tab/tab.css">
     <link rel="stylesheet" href="features/clipboard/clipboard.css">
+    <link rel="stylesheet" href="features/calendar/calendar.css">
     <title>Helper Browser Tool</title>
 </head>
 
 <body>
     <div id="support-btn">
-        <button class="btn" id="openNoteBtn" data-tooltip="Open sidebar Note">
-            <i class="fa-solid fa-book-open"></i>
-        </button>
-        <button class="btn" id="openRecorderBtn" data-tooltip="Screen Recorder">
-            <i class="fa-solid fa-record-vinyl"></i>
-        </button>
-        <button class="btn" id="addStickyBtn" data-tooltip="Sticky Note">
-            <i class="fa-solid fa-note-sticky"></i>
-        </button>
-        <button class="btn" id="openColorPickerBtn" data-tooltip="Color Picker">
-            <i class="fa-solid fa-palette"></i>
-        </button>
+        <div class="logo-container">
+            <img src="assets/media/logo.png" alt="Logo" class="extension-logo">
+            <span class="extension-title">Browser Boost</span>
+        </div>
+        <div class="actions">
+            <button class="btn" id="openNoteBtn" data-tooltip="Open sidebar Note">
+                <i class="fa-solid fa-book-open"></i>
+            </button>
+            <button class="btn" id="openRecorderBtn" data-tooltip="Screen Recorder">
+                <i class="fa-solid fa-record-vinyl"></i>
+            </button>
+            <button class="btn" id="addStickyBtn" data-tooltip="Sticky Note">
+                <i class="fa-solid fa-note-sticky"></i>
+            </button>
+            <button class="btn" id="openColorPickerBtn" data-tooltip="Color Picker">
+                <i class="fa-solid fa-palette"></i>
+            </button>
+        </div>
     </div>
     <hr>
     <div id="tab-bar">
@@ -52,6 +59,10 @@
             <i class="fa-solid fa-terminal"></i>
             <span>Cmds</span>
         </button>
+        <button class="tab-btn" data-tab="calendar" data-tooltip="Vietnamese Lunar Calendar">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Calendar</span>
+        </button>
     </div>
     <div id="tab-contents">
         <div class="tab-content" id="tabmanager-container">
@@ -65,6 +76,8 @@
         <div class="tab-content hidden" id="clipboard-container">
         </div>
         <div class="tab-content hidden" id="quick-command-container">
+        </div>
+        <div class="tab-content hidden" id="calendar-container">
         </div>
     </div>
 

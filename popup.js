@@ -85,6 +85,12 @@ async function loadModule(target) {
         module.initQuickCommand();
         window.quickCommandLoaded = true;
     }
+
+    if (target === "calendar" && !window.calendarLoaded) {
+        const module = await import('./features/calendar/calendar.js');
+        module.initCalendar();
+        window.calendarLoaded = true;
+    }
 }
 
 /* ===============================

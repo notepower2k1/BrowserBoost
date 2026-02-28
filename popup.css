@@ -82,7 +82,8 @@ body {
 #screen-container,
 #eye-relax-container,
 #clipboard-container,
-#quick-command-container {
+#quick-command-container,
+#calendar-container {
     min-width: 750px;
     min-height: 600px;
 }
@@ -92,14 +93,42 @@ body {
    ========================= */
 #support-btn {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     gap: 12px;
-    padding: 16px 24px;
+    padding: 12px 24px;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 100;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.extension-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.extension-title {
+    font-size: 18px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
 }
 
 #support-btn button {
