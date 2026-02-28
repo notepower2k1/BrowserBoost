@@ -1,5 +1,5 @@
 #eye-relax-container {
-    padding: 24px;
+    padding: 12px 20px;
     max-width: 500px;
     margin: 0 auto;
 }
@@ -8,8 +8,8 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 24px;
-    margin-bottom: 24px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
     box-shadow: var(--shadow-sm);
 }
 
@@ -27,8 +27,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
     border-bottom: 1px solid var(--border);
 }
 
@@ -42,8 +42,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
-    gap: 12px;
+    margin-bottom: 12px;
+    gap: 8px;
 }
 
 #eye-relax-container .input-group {
@@ -132,14 +132,14 @@ input:checked+.slider:before {
 #alarmList {
     list-style: none;
     padding: 0;
-    margin: 0 0 20px 0;
+    margin: 0 0 12px 0;
 }
 
 #alarmList li {
     background: var(--bg);
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: var(--radius-sm);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     display: flex;
     justify-content: space-between;
     align-items: center;

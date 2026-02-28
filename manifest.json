@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Broswer Boost",
-    "version": "3.0.0",
+    "version": "3.5.0",
     "description": "Powerful browser extension designed to optimize your web experience, boost productivity, and prioritize your digital well-being",
     "short_name": "BrBt",
     "author": "Thach Nguyen",
