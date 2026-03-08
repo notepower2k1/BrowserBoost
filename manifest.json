@@ -1,9 +1,9 @@
 {
     "manifest_version": 3,
-    "name": "Browser Boost",
-    "version": "3.5.0",
-    "description": "Powerful browser extension designed to optimize your web experience, boost productivity, and prioritize your digital well-being",
-    "short_name": "BrBt",
+    "name": "Browser Boost – Tab Manager, Notes & Productivity Toolkit",
+    "version": "1.0.0",
+    "description": "All-in-one browser productivity toolkit with tab manager, sticky notes, clipboard history, color picker and wellness reminders.",
+    "short_name": "Browser Boost",
     "author": "Thach Nguyen",
     "homepage_url": "https://github.com/notepower2k1",
     "permissions": [
