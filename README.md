@@ -66,7 +66,6 @@
 *   **Maximized Popup Interface**: Fully optimized 800px x 600px workspace — the absolute limit allowed by Chrome for maximum productivity.
 *   **Glassmorphism & Micro-animations**: Background blurs, HSL shadows, and smooth 0.3s-0.5s transitions throughout the entire extension.
 *   **Internal Navigation**: Fixed Header and Tab Bar with an independent scrollable content area for a "Native App" feel.
-*   **Responsive Footer**: Interactive search and "Copy All" tools that wrap automatically for narrow sidebar views.
 *   **Draggable Widgets**: Floating Color Picker and Sticky Notes that stay within viewport boundaries.
 
 ---
