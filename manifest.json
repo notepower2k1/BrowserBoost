@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Broswer Boost",
+    "name": "Browser Boost",
     "version": "3.5.0",
     "description": "Powerful browser extension designed to optimize your web experience, boost productivity, and prioritize your digital well-being",
     "short_name": "BrBt",
@@ -9,9 +9,7 @@
     "permissions": [
         "storage",
         "tabs",
-        "activeTab",
         "tabGroups",
-        "scripting",
         "contextMenus",
         "sidePanel",
         "alarms",

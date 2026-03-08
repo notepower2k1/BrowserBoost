@@ -40,19 +40,10 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (info.menuItemId === "addNote") {
-        const note = {
-            id: Date.now(),
-            content: "",
-            x: info.pageX || 100,
-            y: info.pageY || 100,
-            width: 320,
-            height: 240
-        };
-
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: (note) => window.createStickyNoteFromPopup(note),
-            args: [note]
+        // Send message to content script instead of injecting script
+        chrome.tabs.sendMessage(tab.id, {
+            action: "create-sticky-note",
+            content: ""
         });
     }
 
