@@ -14,7 +14,7 @@
 *   **Optimization**: Keep your workspace tidy and efficient.
 
 ### 2. 📝 Hybrid Note System
-*   **Premium Sidebar Note**: A Rich Text editor integrated directly into the sidebar. Supports formatting, text colors, links, and smart search.
+*   **Premium Sidebar Note**: A Rich Text editor integrated directly into the sidebar. Supports formatting, links, and smart search.
 *   **Sticky Notes**: Attach mini-notes to any webpage. Supports dragging, resizing, and smooth entry/exit animations.
 *   **Quick Extract**: Seamlessly transfer content from Sidebar Notes to Sticky Notes for better focus.
 
@@ -54,13 +54,19 @@
 *   **Fast Navigation**: Modern "Pill-style" Month/Year selector to jump through the timeline effortlessly.
 *   **Optimized Layout**: A balanced 800x600 split-view design (Calendar grid on the left, full date details on the right).
 
+### 9. ☕ Support & Community
+*   **Direct Support**: Click the "Browser Boost" logo in the popup header to support the developer.
+*   **Buy Me a Coffee**: Integrated donation link for users to contribute to the project's growth.
+
 ---
 
 ## 🎨 Design & Experience (UI/UX)
 *   **Unified HSL Design System**: Premium aesthetic with curated palettes, vibrant gradients, and consistent spacing.
+*   **Smart Theme Integration**: Sidebar Notes feature a dedicated **Dark/Light Mode** toggle that intelligently adjusts text contrast for optimal reading.
 *   **Maximized Popup Interface**: Fully optimized 800px x 600px workspace — the absolute limit allowed by Chrome for maximum productivity.
 *   **Glassmorphism & Micro-animations**: Background blurs, HSL shadows, and smooth 0.3s-0.5s transitions throughout the entire extension.
 *   **Internal Navigation**: Fixed Header and Tab Bar with an independent scrollable content area for a "Native App" feel.
+*   **Responsive Footer**: Interactive search and "Copy All" tools that wrap automatically for narrow sidebar views.
 *   **Draggable Widgets**: Floating Color Picker and Sticky Notes that stay within viewport boundaries.
 
 ---
