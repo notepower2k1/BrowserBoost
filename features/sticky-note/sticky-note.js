@@ -97,8 +97,8 @@
                 content: '',
                 x: el.offsetLeft + 20,
                 y: el.offsetTop + 20,
-                width: 160,
-                height: 120
+                width: 320,
+                height: 240
             };
             notes.push(newNote);
             saveNotes();
