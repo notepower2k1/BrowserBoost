@@ -176,6 +176,13 @@ document.querySelector("#openColorPickerBtn").addEventListener("click", async ()
 });
 
 /* ===============================
+   Donation Link
+   ================================ */
+document.querySelector("#donate-btn").addEventListener("click", () => {
+    window.open("https://buymeacoffee.com/hcaht", "_blank");
+});
+
+/* ===============================
    INIT popup
 ================================ */
 restoreLastTab();

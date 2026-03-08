@@ -111,6 +111,13 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.logo-container:hover {
+    transform: scale(1.02);
+    filter: brightness(1.1);
 }
 
 .extension-logo {
