@@ -247,8 +247,15 @@ body {
     overflow-y: auto;
     outline: none;
     background: var(--surface);
+    color: var(--text);
+    /* Always use theme color */
     line-height: 1.6;
     font-size: 15px;
+}
+
+/* Ensure legacy font colors from the removed tool reflect the theme */
+#note-body font[color] {
+    color: var(--text) !important;
 }
 
 #note-body:empty:before {
@@ -266,14 +273,18 @@ body {
     background: var(--surface);
     border-top: 1px solid var(--border);
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    /* Cho phép rớt dòng khi quá chật */
+    justify-content: flex-end;
     align-items: center;
     flex-shrink: 0;
-    gap: 16px;
+    gap: 12px;
 }
 
 .search-box {
     flex: 1;
+    min-width: 200px;
+    /* Force wrap when space is less than this */
     display: flex;
     align-items: center;
     background: var(--bg);
@@ -313,6 +324,12 @@ body {
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+.search-box button:hover {
+    background: var(--primary-hover);
+    transform: scale(1.05);
 }
 
 .btn-primary {
@@ -320,13 +337,20 @@ body {
     color: white;
     border: none;
     padding: 8px 16px;
-    border-radius: var(--radius-sm);
+    border-radius: 100px;
+    white-space: nowrap;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
+    /* Center content when wide */
     gap: 8px;
+    flex: 1;
+    /* Allow button to grow on its own line */
+    min-width: 120px;
+    flex-shrink: 0;
     transition: all 0.2s;
 }
 

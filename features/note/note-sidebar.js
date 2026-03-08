@@ -117,10 +117,10 @@ function resizeImagesInNote(maxWidth) {
 }
 
 const toolbarButtons = document.querySelectorAll('#note-toolbar button[data-cmd]');
-const colorInput = document.getElementById('foreColor');
 
 toolbarButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('mousedown', (e) => {
+        e.preventDefault(); // Ngăn mất focus ở noteBody
         const cmd = btn.dataset.cmd;
         let value = null;
 
@@ -137,21 +137,6 @@ toolbarButtons.forEach(btn => {
     });
 });
 
-if (colorInput) {
-    colorInput.addEventListener('input', () => {
-        const cmd = colorInput.dataset.cmd;
-        document.execCommand(cmd, false, colorInput.value);
-        saveCurrentNoteContent();
-    });
-}
-
-document.getElementById('font-size').addEventListener('change', (e) => {
-    const size = e.target.value;
-    document.execCommand('fontSize', false, 7); // set size max
-    const fontElements = noteBody.querySelectorAll('font[size="7"]');
-    fontElements.forEach(el => el.removeAttribute('size'));
-    fontElements.forEach(el => el.style.fontSize = size);
-});
 // ----------------- Note Content -----------------
 function saveCurrentNoteContent() {
     if (!currentNoteId) return;
