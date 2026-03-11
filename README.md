@@ -1,4 +1,5 @@
 # 🚀 Browser Boost - Comprehensive Browser Assistant
+[Get extension Now!!!!](https://chromewebstore.google.com/detail/browser-boost-%E2%80%93-tab-manag/kabcfiedpjbaocgbnmpblhcpllfhilog?hl=vi&authuser=1)
 
 ![logo](https://raw.githubusercontent.com/notepower2k1/ChromeHelperTool/refs/heads/main/icon128.png)
 
